@@ -74,7 +74,7 @@ export async function generatePDF(catalog) {
     doc.setFillColor(...C.blueSoft); doc.roundedRect(rx, pbY, rw, pbH, 3, 3, 'F');
     doc.setFillColor(...C.blue); doc.roundedRect(rx, pbY, 2.4, pbH, 1, 1, 'F');
     doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(...C.soft);
-    doc.text('PREÇO SUGERIDO', rx + 7, pbY + 8);
+    doc.text('VALOR', rx + 7, pbY + 8);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(18); doc.setTextColor(...C.blueDeep);
     doc.text(fmtPrice(p.price), rx + 7, pbY + 17);
 
