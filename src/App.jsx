@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Home } from './components/Home.jsx';
 import { Editor } from './components/Editor.jsx';
-import { ToastHost } from './components/Toasts.jsx';
+import { ToastHost, toast } from './components/Toasts.jsx';
 import { Ic } from './icons.jsx';
 
 export default function App() {
   const [route, setRoute] = useState({ screen: 'home', id: null });
   const goHome = () => setRoute({ screen: 'home', id: null });
   const openEditor = (id) => setRoute({ screen: 'editor', id });
+
+  // Retorno do OAuth do Bling: mostra aviso e limpa a URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const b = params.get('bling');
+    if (!b) return;
+    setTimeout(() => {
+      if (b === 'connected') toast('Bling conectado com sucesso!');
+      else if (b === 'error') toast('Não foi possível conectar ao Bling', 'err');
+    }, 60);
+    params.delete('bling');
+    const qs = params.toString();
+    window.history.replaceState({}, '', window.location.pathname + (qs ? '?' + qs : ''));
+  }, []);
 
   return (
     <>

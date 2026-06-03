@@ -1,9 +1,10 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Modal } from './Modal.jsx';
 import { Cropper } from './Cropper.jsx';
 import { Ic } from '../icons.jsx';
-import { fileToDataURL } from '../util.js';
+import { fileToDataURL, fmtPrice } from '../util.js';
 import { toast } from './Toasts.jsx';
+import { api } from '../api.js';
 
 export function PageForm({ page, onSave, onClose }) {
   const editing = !!page;
@@ -17,7 +18,63 @@ export function PageForm({ page, onSave, onClose }) {
   const [saving, setSaving] = useState(false);
   const fileRef = useRef(null);
 
+  // ----- Bling (opcional / degradável) -----
+  const [blingOn, setBlingOn] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSug, setShowSug] = useState(false);
+  const [searching, setSearching] = useState(false);
+  const [pulling, setPulling] = useState(false);
+  const debounceRef = useRef(null);
+
+  useEffect(() => {
+    let alive = true;
+    api.blingStatus()
+      .then((s) => { if (alive) setBlingOn(!!(s && s.connected)); })
+      .catch(() => { /* silencioso: segue no modo manual */ });
+    return () => { alive = false; };
+  }, []);
+
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  function onName(e) {
+    const v = e.target.value;
+    setForm((f) => ({ ...f, name: v }));
+    if (!blingOn) return; // sem Bling, é só um input normal
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    const q = v.trim();
+    if (q.length < 4) { setSuggestions([]); setShowSug(false); return; }
+    setSearching(true);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await api.blingSearch(q);
+        if (res && res.connected) { setSuggestions(res.items || []); setShowSug(true); }
+        else { setSuggestions([]); setShowSug(false); }
+      } catch { setSuggestions([]); setShowSug(false); }
+      finally { setSearching(false); }
+    }, 350);
+  }
+
+  async function pick(item) {
+    setShowSug(false); setSuggestions([]);
+    setForm((f) => ({ ...f, name: item.nome || f.name }));
+    setPulling(true);
+    try {
+      const res = await api.blingProduct(item.id);
+      const p = res && res.produto;
+      if (p) {
+        setForm((f) => ({
+          ...f,
+          name: p.nome || f.name,
+          price: p.price || f.price,
+          description: p.description || f.description,
+          dimensions: p.dimensions || f.dimensions,
+          weight: p.weight || f.weight,
+        }));
+        toast('Dados preenchidos do Bling');
+      }
+    } catch { /* silencioso */ }
+    finally { setPulling(false); }
+  }
 
   async function onFile(e) {
     const f = e.target.files[0];
@@ -30,13 +87,9 @@ export function PageForm({ page, onSave, onClose }) {
   async function save() {
     if (!form.name.trim()) { toast('Informe o nome do produto', 'err'); return; }
     setSaving(true);
-    try {
-      await onSave({ ...form, name: form.name.trim(), image });
-    } catch (err) {
-      toast(err.message || 'Erro ao salvar', 'err');
-    } finally {
-      setSaving(false);
-    }
+    try { await onSave({ ...form, name: form.name.trim(), image }); }
+    catch (err) { toast(err.message || 'Erro ao salvar', 'err'); }
+    finally { setSaving(false); }
   }
 
   return (
@@ -56,7 +109,33 @@ export function PageForm({ page, onSave, onClose }) {
         <div className="form-grid">
           <div className="field full">
             <label>Nome do produto *</label>
-            <input value={form.name} onChange={set('name')} placeholder="Ex.: Vaso Geométrico Hexagonal" />
+            <div className="ac-wrap">
+              <input
+                value={form.name}
+                onChange={onName}
+                onFocus={() => { if (suggestions.length) setShowSug(true); }}
+                onBlur={() => setTimeout(() => setShowSug(false), 150)}
+                placeholder="Ex.: Vaso Geométrico Hexagonal"
+                autoComplete="off"
+              />
+              {showSug && suggestions.length > 0 && (
+                <div className="ac-list">
+                  {suggestions.map((s) => (
+                    <div key={s.id} className="ac-item" onMouseDown={(e) => { e.preventDefault(); pick(s); }}>
+                      <span className="nm">{s.nome}</span>
+                      <span className="meta">{s.codigo ? s.codigo + ' · ' : ''}{s.preco ? fmtPrice(String(s.preco).replace('.', ',')) : ''}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            {blingOn && (
+              <div className="ac-hint">
+                {pulling ? <><span className="ac-spin" />Buscando dados no Bling…</>
+                  : searching ? <><span className="ac-spin" />Procurando no Bling…</>
+                  : <><Ic name="check" />Conectado ao Bling — digite 4+ letras para buscar e preencher automaticamente</>}
+              </div>
+            )}
           </div>
           <div className="field">
             <label>Preço sugerido</label>

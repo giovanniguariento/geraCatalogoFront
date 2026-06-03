@@ -26,4 +26,11 @@ export const api = {
   updatePage: (id, data) => req('/pages/' + id, { method: 'PUT', body: JSON.stringify(data) }),
   deletePage: (id) => req('/pages/' + id, { method: 'DELETE' }),
   reorder: (id, order) => req('/catalogs/' + id + '/reorder', { method: 'PUT', body: JSON.stringify({ order }) }),
+  // Bling (opcional)
+  blingStatus: () => req('/bling/status'),
+  blingSearch: (q) => req('/bling/produtos?q=' + encodeURIComponent(q)),
+  blingProduct: (id) => req('/bling/produtos/' + encodeURIComponent(id)),
+  // OAuth é navegação de página inteira (fora de /api); volta pro app via ?bling=
+  blingConnectUrl: () => BASE + '/bling/connect?return=' +
+    encodeURIComponent(window.location.origin + window.location.pathname),
 };
