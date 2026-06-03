@@ -11,6 +11,7 @@ export function Home({ onOpen }) {
   const [error, setError] = useState(null);
   const [confirm, setConfirm] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [bling, setBling] = useState(null); // { configured, connected }
 
   async function load() {
     setError(null);
@@ -18,6 +19,9 @@ export function Home({ onOpen }) {
     catch (e) { setError(e.message); setList([]); }
   }
   useEffect(() => { load(); }, []);
+  useEffect(() => {
+    api.blingStatus().then(setBling).catch(() => setBling(null));
+  }, []);
 
   async function create() {
     setBusy(true);
@@ -46,7 +50,17 @@ export function Home({ onOpen }) {
           <h1>Seus catálogos</h1>
           <p>Crie, edite e exporte catálogos de produtos em PDF.</p>
         </div>
-        <button className="btn btn-primary" onClick={create} disabled={busy}><Ic name="plus" />Criar novo catálogo</button>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+          {bling && bling.connected && (
+            <span className="bling-badge"><Ic name="check" />Bling conectado</span>
+          )}
+          {bling && bling.configured && !bling.connected && (
+            <button className="btn btn-ghost btn-sm" onClick={() => { window.location.href = api.blingConnectUrl(); }}>
+              <Ic name="link" />Conectar ao Bling
+            </button>
+          )}
+          <button className="btn btn-primary" onClick={create} disabled={busy}><Ic name="plus" />Criar novo catálogo</button>
+        </div>
       </div>
 
       {list === null && (
