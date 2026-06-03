@@ -111,6 +111,7 @@ export function PageForm({ page, onSave, onClose }) {
             <label>Nome do produto *</label>
             <div className="ac-wrap">
               <input
+                className="ac-wrap-input"
                 value={form.name}
                 onChange={onName}
                 onFocus={() => { if (suggestions.length) setShowSug(true); }}
