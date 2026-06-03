@@ -44,3 +44,19 @@ export async function resizeContain(dataURL, maxW, maxH) {
   c.getContext('2d').drawImage(im, 0, 0, w, h);
   return c.toDataURL('image/png');
 }
+
+// Encaixa a imagem (inteira, sem distorcer) num quadrado com fundo branco.
+// Usado para imagens vindas do Bling, no mesmo formato do recorte do catálogo.
+export async function fitSquareWhite(dataURL, size = 1000) {
+  const im = await loadImg(dataURL);
+  const c = document.createElement('canvas');
+  c.width = size; c.height = size;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, size, size);
+  const r = Math.min(size / im.width, size / im.height);
+  const w = im.width * r, h = im.height * r;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(im, (size - w) / 2, (size - h) / 2, w, h);
+  return c.toDataURL('image/jpeg', 0.85);
+}
