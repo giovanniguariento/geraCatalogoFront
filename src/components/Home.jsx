@@ -54,6 +54,12 @@ export function Home({ onOpen }) {
           {bling && bling.connected && (
             <span className="bling-badge"><Ic name="check" />Bling conectado</span>
           )}
+          {bling && bling.connected && (
+            <button className="btn btn-ghost btn-sm" title="Refazer a autorização com o Bling"
+              onClick={() => { window.location.href = api.blingConnectUrl(); }}>
+              <Ic name="link" />Reconectar
+            </button>
+          )}
           {bling && bling.configured && !bling.connected && (
             <button className="btn btn-ghost btn-sm" onClick={() => { window.location.href = api.blingConnectUrl(); }}>
               <Ic name="link" />Conectar ao Bling

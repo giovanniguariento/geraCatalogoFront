@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Modal } from './Modal.jsx';
 import { Cropper } from './Cropper.jsx';
 import { Ic } from '../icons.jsx';
-import { fileToDataURL, fmtPrice } from '../util.js';
+import { fileToDataURL, fmtPrice, fitSquareWhite } from '../util.js';
 import { toast } from './Toasts.jsx';
 import { api } from '../api.js';
 
@@ -70,6 +70,10 @@ export function PageForm({ page, onSave, onClose }) {
           dimensions: p.dimensions || f.dimensions,
           weight: p.weight || f.weight,
         }));
+        if (p.image) {
+          try { setImage(await fitSquareWhite(p.image)); }
+          catch { setImage(p.image); }
+        }
         toast('Dados preenchidos do Bling');
       }
     } catch { /* silencioso */ }
@@ -111,7 +115,6 @@ export function PageForm({ page, onSave, onClose }) {
             <label>Nome do produto *</label>
             <div className="ac-wrap">
               <input
-                className="ac-wrap-input"
                 value={form.name}
                 onChange={onName}
                 onFocus={() => { if (suggestions.length) setShowSug(true); }}
