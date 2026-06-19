@@ -37,4 +37,11 @@ export const api = {
     req('/bling/relatorio/peso-fornecedor/iniciar?ano=' + ano + '&mes=' + mes + '&fornecedor=' + encodeURIComponent(fornecedor)),
   blingReportStatus: (jobId) =>
     req('/bling/relatorio/peso-fornecedor/status?jobId=' + encodeURIComponent(jobId)),
+  // Fila de impressão
+  blingFila: () => req('/bling/fila'),
+  blingFilaAtualizar: () => req('/bling/fila/atualizar', { method: 'POST', body: '{}' }),
+  blingFilaImpresso: (sku, printed) => req('/bling/fila/impresso', { method: 'POST', body: JSON.stringify({ sku, printed }) }),
+  blingFilaManual: (form) => req('/bling/fila/manual', { method: 'POST', body: JSON.stringify(form) }),
+  blingFilaRemover: (sku) => req('/bling/fila/remover', { method: 'POST', body: JSON.stringify({ sku }) }),
+  blingFilaImportar: (queue, processed) => req('/bling/fila/importar', { method: 'POST', body: JSON.stringify({ queue, processed }) }),
 };
