@@ -55,4 +55,13 @@ export const api = {
     if (!r.ok) { let m = 'Erro ' + r.status; try { const j = await r.json(); m = j.error || m; } catch {} throw new Error(m); }
     return { blob: await r.blob(), count: r.headers.get('X-Label-Count') };
   },
+  zplPreview: async ({ zpl, dpmm, width, height, rotation, index }) => {
+    const headers = { 'Content-Type': 'application/json' };
+    if (KEY) headers['x-api-key'] = KEY;
+    const r = await fetch(BASE + '/api/zpl/preview', {
+      method: 'POST', headers, body: JSON.stringify({ zpl, dpmm, width, height, rotation, index }),
+    });
+    if (!r.ok) { let m = 'Erro ' + r.status; try { const j = await r.json(); m = j.error || m; } catch {} throw new Error(m); }
+    return { url: URL.createObjectURL(await r.blob()), total: Number(r.headers.get('X-Label-Total')) || 1, index: Number(r.headers.get('X-Label-Index')) || 0 };
+  },
 };

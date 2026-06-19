@@ -185,3 +185,8 @@ input,textarea,select{font-family:inherit; font-size:14px; color:var(--ink)}
 
 .dash-card svg{width:18px;height:18px}
 .dash-card .dash-ic svg{width:24px;height:24px}
+
+.dash-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:8px}
+@media(max-width:620px){.dash-grid{grid-template-columns:1fr}}
+
+@media(max-width:760px){.zpl-cols{grid-template-columns:1fr !important}}

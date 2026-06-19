@@ -65,7 +65,7 @@ export function Dashboard({ onCatalogos, onFila, onRelatorio, onZpl }) {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginTop: 8 }}>
+      <div className="dash-grid">
         <Card
           icon="book" title="Catálogos"
           accent={{ bg: '#e6f0ff', fg: '#1c47b8' }}
