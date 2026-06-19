@@ -6,12 +6,11 @@ import { toast } from './Toasts.jsx';
 import { Confirm } from './Modal.jsx';
 import { generatePDF } from '../pdf.js';
 
-export function Home({ onOpen, onRelatorio }) {
+export function Home({ onOpen, onBack }) {
   const [list, setList] = useState(null);
   const [error, setError] = useState(null);
   const [confirm, setConfirm] = useState(null);
   const [busy, setBusy] = useState(false);
-  const [bling, setBling] = useState(null); // { configured, connected }
 
   async function load() {
     setError(null);
@@ -19,9 +18,6 @@ export function Home({ onOpen, onRelatorio }) {
     catch (e) { setError(e.message); setList([]); }
   }
   useEffect(() => { load(); }, []);
-  useEffect(() => {
-    api.blingStatus().then(setBling).catch(() => setBling(null));
-  }, []);
 
   async function create() {
     setBusy(true);
@@ -45,31 +41,14 @@ export function Home({ onOpen, onRelatorio }) {
 
   return (
     <>
+      <button className="btn btn-ghost btn-sm" style={{ marginBottom: 18 }} onClick={onBack}><Ic name="back" />Voltar ao painel</button>
+
       <div className="page-head">
         <div>
           <h1>Seus catálogos</h1>
           <p>Crie, edite e exporte catálogos de produtos em PDF.</p>
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-          {bling && bling.connected && (
-            <span className="bling-badge"><Ic name="check" />Bling conectado</span>
-          )}
-          {bling && bling.connected && (
-            <button className="btn btn-ghost btn-sm" title="Refazer a autorização com o Bling"
-              onClick={() => { window.location.href = api.blingConnectUrl(); }}>
-              <Ic name="link" />Reconectar
-            </button>
-          )}
-          {bling && bling.configured && !bling.connected && (
-            <button className="btn btn-ghost btn-sm" onClick={() => { window.location.href = api.blingConnectUrl(); }}>
-              <Ic name="link" />Conectar ao Bling
-            </button>
-          )}
-          {bling && bling.connected && (
-            <button className="btn btn-soft btn-sm" title="Peso vendido por fornecedor" onClick={onRelatorio}>
-              <Ic name="pdf" />Relatório de peso
-            </button>
-          )}
           <button className="btn btn-primary" onClick={create} disabled={busy}><Ic name="plus" />Criar novo catálogo</button>
         </div>
       </div>
