@@ -4,6 +4,7 @@ import { Home } from './components/Home.jsx';
 import { Editor } from './components/Editor.jsx';
 import { Relatorio } from './components/Relatorio.jsx';
 import { Fila } from './components/Fila.jsx';
+import { Zpl } from './components/Zpl.jsx';
 import { ToastHost, toast } from './components/Toasts.jsx';
 import { Ic } from './icons.jsx';
 
@@ -14,6 +15,7 @@ export default function App() {
   const openEditor = (id) => setRoute({ screen: 'editor', id });
   const openRelatorio = () => setRoute({ screen: 'relatorio', id: null });
   const openFila = () => setRoute({ screen: 'fila', id: null });
+  const openZpl = () => setRoute({ screen: 'zpl', id: null });
 
   // Retorno do OAuth do Bling: mostra aviso e limpa a URL
   useEffect(() => {
@@ -59,11 +61,12 @@ export default function App() {
       </div>
 
       <div className="wrap">
-        {route.screen === 'dashboard' && <Dashboard onCatalogos={openCatalogos} onFila={openFila} onRelatorio={openRelatorio} />}
+        {route.screen === 'dashboard' && <Dashboard onCatalogos={openCatalogos} onFila={openFila} onRelatorio={openRelatorio} onZpl={openZpl} />}
         {route.screen === 'catalogos' && <Home onOpen={openEditor} onBack={goDash} />}
         {route.screen === 'editor' && <Editor catalogId={route.id} onBack={openCatalogos} />}
         {route.screen === 'relatorio' && <Relatorio onBack={goDash} />}
         {route.screen === 'fila' && <Fila onBack={goDash} />}
+        {route.screen === 'zpl' && <Zpl onBack={goDash} />}
       </div>
 
       <ToastHost />

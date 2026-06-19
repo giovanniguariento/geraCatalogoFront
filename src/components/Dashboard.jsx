@@ -33,7 +33,7 @@ function Card({ icon, accent, title, desc, meta, onClick, soon }) {
   );
 }
 
-export function Dashboard({ onCatalogos, onFila, onRelatorio }) {
+export function Dashboard({ onCatalogos, onFila, onRelatorio, onZpl }) {
   const [bling, setBling] = useState(null);
   const [nCat, setNCat] = useState(null);
 
@@ -86,6 +86,13 @@ export function Dashboard({ onCatalogos, onFila, onRelatorio }) {
           desc="Peso vendido por fornecedor e outras extrações do Bling."
           meta="por mês"
           onClick={onRelatorio}
+        />
+        <Card
+          icon="tag" title="Etiquetas ZPL"
+          accent={{ bg: '#efe7fb', fg: '#6d28d9' }}
+          desc="Converter ZPL em PDF multipágina, sem limite de etiquetas."
+          meta="ZPL → PDF"
+          onClick={onZpl}
         />
       </div>
     </>

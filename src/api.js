@@ -44,4 +44,15 @@ export const api = {
   blingFilaManual: (form) => req('/bling/fila/manual', { method: 'POST', body: JSON.stringify(form) }),
   blingFilaRemover: (sku) => req('/bling/fila/remover', { method: 'POST', body: JSON.stringify({ sku }) }),
   blingFilaImportar: (queue, processed) => req('/bling/fila/importar', { method: 'POST', body: JSON.stringify({ queue, processed }) }),
+  // Conversor ZPL -> PDF
+  zplCount: (zpl) => req('/zpl/contar', { method: 'POST', body: JSON.stringify({ zpl }) }),
+  zplConvert: async ({ zpl, dpmm, width, height, rotation }) => {
+    const headers = { 'Content-Type': 'application/json' };
+    if (KEY) headers['x-api-key'] = KEY;
+    const r = await fetch(BASE + '/api/zpl/converter', {
+      method: 'POST', headers, body: JSON.stringify({ zpl, dpmm, width, height, rotation }),
+    });
+    if (!r.ok) { let m = 'Erro ' + r.status; try { const j = await r.json(); m = j.error || m; } catch {} throw new Error(m); }
+    return { blob: await r.blob(), count: r.headers.get('X-Label-Count') };
+  },
 };
