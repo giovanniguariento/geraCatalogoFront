@@ -14,7 +14,7 @@ function Card({ icon, accent, title, desc, meta, onClick, soon }) {
         padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: 12, width: '100%',
       }}
     >
-      <span style={{
+      <span className="dash-ic" style={{
         width: 46, height: 46, borderRadius: 12, display: 'inline-flex',
         alignItems: 'center', justifyContent: 'center', background: accent.bg, color: accent.fg,
       }}>
@@ -79,7 +79,6 @@ export function Dashboard({ onCatalogos, onFila, onRelatorio }) {
           desc="Pedidos do Bling priorizados para a produção."
           meta="produção"
           onClick={onFila}
-          soon
         />
         <Card
           icon="chart" title="Relatórios"

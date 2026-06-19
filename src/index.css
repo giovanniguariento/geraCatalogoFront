@@ -182,3 +182,6 @@ input,textarea,select{font-family:inherit; font-size:14px; color:var(--ink)}
 
 .bling-badge{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--ok);background:#e7f6ef;border:1px solid #bfe6d3;padding:7px 12px;border-radius:11px}
 .bling-badge svg{width:15px;height:15px}
+
+.dash-card svg{width:18px;height:18px}
+.dash-card .dash-ic svg{width:24px;height:24px}
