@@ -6,7 +6,7 @@ import { toast } from './Toasts.jsx';
 import { Confirm } from './Modal.jsx';
 import { generatePDF } from '../pdf.js';
 
-export function Home({ onOpen }) {
+export function Home({ onOpen, onRelatorio }) {
   const [list, setList] = useState(null);
   const [error, setError] = useState(null);
   const [confirm, setConfirm] = useState(null);
@@ -63,6 +63,11 @@ export function Home({ onOpen }) {
           {bling && bling.configured && !bling.connected && (
             <button className="btn btn-ghost btn-sm" onClick={() => { window.location.href = api.blingConnectUrl(); }}>
               <Ic name="link" />Conectar ao Bling
+            </button>
+          )}
+          {bling && bling.connected && (
+            <button className="btn btn-soft btn-sm" title="Peso vendido por fornecedor" onClick={onRelatorio}>
+              <Ic name="pdf" />Relatório de peso
             </button>
           )}
           <button className="btn btn-primary" onClick={create} disabled={busy}><Ic name="plus" />Criar novo catálogo</button>

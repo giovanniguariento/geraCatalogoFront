@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Home } from './components/Home.jsx';
 import { Editor } from './components/Editor.jsx';
+import { Relatorio } from './components/Relatorio.jsx';
 import { ToastHost, toast } from './components/Toasts.jsx';
 import { Ic } from './icons.jsx';
 
@@ -8,6 +9,7 @@ export default function App() {
   const [route, setRoute] = useState({ screen: 'home', id: null });
   const goHome = () => setRoute({ screen: 'home', id: null });
   const openEditor = (id) => setRoute({ screen: 'editor', id });
+  const openRelatorio = () => setRoute({ screen: 'relatorio', id: null });
 
   // Retorno do OAuth do Bling: mostra aviso e limpa a URL
   useEffect(() => {
@@ -50,9 +52,9 @@ export default function App() {
       </div>
 
       <div className="wrap">
-        {route.screen === 'home'
-          ? <Home onOpen={openEditor} />
-          : <Editor catalogId={route.id} onBack={goHome} />}
+        {route.screen === 'home' && <Home onOpen={openEditor} onRelatorio={openRelatorio} />}
+        {route.screen === 'editor' && <Editor catalogId={route.id} onBack={goHome} />}
+        {route.screen === 'relatorio' && <Relatorio onBack={goHome} />}
       </div>
 
       <ToastHost />

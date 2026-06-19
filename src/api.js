@@ -33,4 +33,8 @@ export const api = {
   // OAuth é navegação de página inteira (fora de /api); volta pro app via ?bling=
   blingConnectUrl: () => BASE + '/bling/connect?return=' +
     encodeURIComponent(window.location.origin + window.location.pathname),
+  blingReportStart: (ano, mes, fornecedor) =>
+    req('/bling/relatorio/peso-fornecedor/iniciar?ano=' + ano + '&mes=' + mes + '&fornecedor=' + encodeURIComponent(fornecedor)),
+  blingReportStatus: (jobId) =>
+    req('/bling/relatorio/peso-fornecedor/status?jobId=' + encodeURIComponent(jobId)),
 };
