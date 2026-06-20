@@ -190,3 +190,34 @@ input,textarea,select{font-family:inherit; font-size:14px; color:var(--ink)}
 @media(max-width:620px){.dash-grid{grid-template-columns:1fr}}
 
 @media(max-width:760px){.zpl-cols{grid-template-columns:1fr !important}}
+
+/* ---------------- Modo escuro ---------------- */
+[data-theme="dark"]{
+  --bg:#0b1220; --surface:#121c2e; --surface-2:#16233a; --surface-3:#1f2f49;
+  --ink:#e7eef7; --ink-soft:#9fb0c6; --ink-faint:#6f8198;
+  --line:#243349; --line-strong:#33486a;
+  --blue:#4f86ff; --blue-deep:#a9c2ff; --blue-soft:#1b2a47; --blue-soft-2:#22345a;
+  --ok:#34d399; --danger:#f87171; --warn:#fbbf24;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.5);
+  --shadow:0 6px 18px rgba(0,0,0,.5);
+  --shadow-lg:0 18px 50px rgba(0,0,0,.6);
+}
+[data-theme="dark"] body{
+  background-image:radial-gradient(900px 500px at 85% -8%, #15233b 0%, transparent 60%),
+                   radial-gradient(700px 500px at -5% 0%, #101a2c 0%, transparent 55%);
+}
+[data-theme="dark"] .topbar{background:rgba(11,18,32,.82)}
+[data-theme="dark"] input,[data-theme="dark"] textarea,[data-theme="dark"] select{background:var(--surface-2);border-color:var(--line)}
+[data-theme="dark"] .field input,[data-theme="dark"] .field textarea,[data-theme="dark"] .field select{background:var(--surface-2)}
+[data-theme="dark"] .field input:focus,[data-theme="dark"] .field textarea:focus,[data-theme="dark"] .field select:focus{background:var(--surface-3)}
+[data-theme="dark"] .ac-list{background:var(--surface-2)}
+[data-theme="dark"] .toast{background:#0f1a2e;color:var(--ink);border:1px solid var(--line)}
+[data-theme="dark"] .pnum{background:var(--surface-3);color:var(--ink)}
+[data-theme="dark"] .bling-badge{background:#13301f;border-color:#1f5236}
+
+/* botão de alternância de tema */
+.theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);font-size:16px;line-height:1;transition:.15s}
+.theme-toggle:hover{background:var(--surface-2);color:var(--ink)}
+
+/* logo horizontal (wordmark) usada no modo escuro */
+.mark-word{height:30px;width:auto;display:block}

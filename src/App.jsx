@@ -10,6 +10,19 @@ import { Ic } from './icons.jsx';
 
 export default function App() {
   const [route, setRoute] = useState({ screen: 'dashboard', id: null });
+  const [theme, setTheme] = useState(() => {
+    try {
+      const saved = localStorage.getItem('theme');
+      if (saved) return saved;
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    } catch { return 'light'; }
+  });
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    try { localStorage.setItem('theme', theme); } catch {}
+  }, [theme]);
+  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
+
   const goDash = () => setRoute({ screen: 'dashboard', id: null });
   const openCatalogos = () => setRoute({ screen: 'catalogos', id: null });
   const openEditor = (id) => setRoute({ screen: 'editor', id });
@@ -36,8 +49,14 @@ export default function App() {
       <div className="topbar">
         <div className="topbar-in">
           <div className="brand" onClick={goDash}>
-            <img className="mark" src="/logo.png" alt="Boreal3DShop" />
-            <div className="brand-txt"><b>Boreal3DShop</b><span>Painel</span></div>
+            {theme === 'dark' ? (
+              <img className="mark-word" src="/logo-white.png" alt="Boreal3DShop" />
+            ) : (
+              <>
+                <img className="mark" src="/logo.png" alt="Boreal3DShop" />
+                <div className="brand-txt"><b>Boreal3DShop</b><span>Painel</span></div>
+              </>
+            )}
           </div>
           <div className="spacer" />
           <div className="crumb">
@@ -52,6 +71,9 @@ export default function App() {
             {route.screen === 'fila' && <span className="here">Fila de impressão</span>}
             {route.screen === 'relatorio' && <span className="here">Relatórios</span>}
           </div>
+          <button className="theme-toggle" onClick={toggleTheme} title="Alternar tema claro/escuro" aria-label="Alternar tema" style={{ marginLeft: 10 }}>
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
         </div>
       </div>
 
