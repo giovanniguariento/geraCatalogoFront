@@ -27,7 +27,7 @@ input,textarea,select{font-family:inherit; font-size:14px; color:var(--ink)}
 .topbar{position:sticky; top:0; z-index:40; backdrop-filter:blur(10px); background:rgba(255,255,255,.78); border-bottom:1px solid var(--line)}
 .topbar-in{max-width:1140px; margin:0 auto; padding:14px 22px; display:flex; align-items:center; gap:14px}
 .brand{display:flex; align-items:center; gap:11px; cursor:pointer}
-.mark{width:34px; height:34px; flex:0 0 auto; filter:drop-shadow(0 4px 8px rgba(35,88,230,.3))}
+.mark{width:34px; height:34px; flex:0 0 auto; border-radius:8px; object-fit:cover; filter:drop-shadow(0 3px 7px rgba(15,23,42,.2))}
 .brand-txt{line-height:1}
 .brand-txt b{font-family:var(--display); font-weight:800; font-size:17px; letter-spacing:-.3px; display:block}
 .brand-txt span{font-size:10.5px; color:var(--ink-soft); letter-spacing:.5px; text-transform:uppercase; font-weight:600}

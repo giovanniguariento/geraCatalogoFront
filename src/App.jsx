@@ -36,12 +36,7 @@ export default function App() {
       <div className="topbar">
         <div className="topbar-in">
           <div className="brand" onClick={goDash}>
-            <svg className="mark" viewBox="0 0 48 48" fill="none">
-              <path d="M24 4 42 14v20L24 44 6 34V14L24 4Z" fill="#2358e6" />
-              <path d="M24 4 42 14 24 24 6 14 24 4Z" fill="#5b8bff" />
-              <path d="M24 24 42 14v20L24 44V24Z" fill="#143a99" />
-              <path d="M24 24 6 14v20l18 10V24Z" fill="#1c47b8" />
-            </svg>
+            <img className="mark" src="/logo.png" alt="Boreal3DShop" />
             <div className="brand-txt"><b>Boreal3DShop</b><span>Painel</span></div>
           </div>
           <div className="spacer" />
