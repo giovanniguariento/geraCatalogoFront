@@ -20,7 +20,7 @@ body{
                    radial-gradient(700px 500px at -5% 0%, #eef4fb 0%, transparent 55%);
   background-attachment:fixed; min-height:100vh; -webkit-font-smoothing:antialiased;
 }
-button{font-family:inherit; cursor:pointer; border:none; background:none}
+button{font-family:inherit; cursor:pointer; border:none; background:none; color:inherit}
 input,textarea,select{font-family:inherit; font-size:14px; color:var(--ink)}
 ::placeholder{color:var(--ink-faint)}
 
@@ -221,3 +221,9 @@ input,textarea,select{font-family:inherit; font-size:14px; color:var(--ink)}
 
 /* logo horizontal (wordmark) usada no modo escuro */
 .mark-word{height:30px;width:auto;display:block}
+[data-theme="dark"] .card-top{background:linear-gradient(135deg,#16233a,#101a2c)}
+.panel-hero{background:linear-gradient(135deg,#f7faff,#eef4fd)}
+[data-theme="dark"] .panel-hero{background:linear-gradient(135deg,#16233a,#101a2c)}
+[data-theme="dark"] .btn-danger-soft{background:#3a1d1d;color:#f7a8a2}
+[data-theme="dark"] .icon-btn.danger:hover{background:#3a1d1d}
+[data-theme="dark"] .seg button.on{background:var(--surface-3);color:var(--blue-deep)}

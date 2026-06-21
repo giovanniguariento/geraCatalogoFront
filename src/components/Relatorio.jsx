@@ -107,7 +107,7 @@ export function Relatorio({ onBack }) {
 
       {result && (
         <>
-          <div className="panel" style={{ padding: 24, marginBottom: 18, background: 'linear-gradient(135deg,#f7faff,#eef4fd)' }}>
+          <div className="panel panel-hero" style={{ padding: 24, marginBottom: 18 }}>
             <div style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink-soft)', textTransform: 'uppercase', letterSpacing: '.5px' }}>
               {MESES[Number(mes)]} de {ano} · {result.fornecedor}
             </div>
