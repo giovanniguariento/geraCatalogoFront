@@ -41,6 +41,7 @@ export const api = {
   blingFila: () => req('/bling/fila'),
   blingFilaAtualizar: () => req('/bling/fila/atualizar', { method: 'POST', body: '{}' }),
   blingFilaImpresso: (sku, printed) => req('/bling/fila/impresso', { method: 'POST', body: JSON.stringify({ sku, printed }) }),
+  blingFilaEstoque: (sku, stock) => req('/bling/fila/estoque', { method: 'POST', body: JSON.stringify({ sku, stock }) }),
   blingFilaManual: (form) => req('/bling/fila/manual', { method: 'POST', body: JSON.stringify(form) }),
   blingFilaRemover: (sku) => req('/bling/fila/remover', { method: 'POST', body: JSON.stringify({ sku }) }),
   blingFilaImportar: (queue, processed) => req('/bling/fila/importar', { method: 'POST', body: JSON.stringify({ queue, processed }) }),

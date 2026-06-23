@@ -29,9 +29,13 @@ export function Fila({ onBack }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [modal, setModal] = useState(false);
-  const [form, setForm] = useState({ sku: '', productName: '', quantity: 1, price: 0, orderId: '' });
+  const [form, setForm] = useState({ sku: '', productName: '', quantity: 1, price: 0, orderId: '', stock: 0 });
   const [saving, setSaving] = useState(false);
   const [modalErr, setModalErr] = useState('');
+  const [sug, setSug] = useState([]);
+  const [showSug, setShowSug] = useState(false);
+  const [searching, setSearching] = useState(false);
+  const searchRef = useRef(null);
   const [showImport, setShowImport] = useState(false);
   const [impQueue, setImpQueue] = useState('');
   const [impProc, setImpProc] = useState('');
@@ -65,13 +69,46 @@ export function Fila({ onBack }) {
     catch (e) { toast(e.message, 'err'); }
   }
 
+  async function setStock(item, value) {
+    const stock = Math.max(0, value);
+    setItems((arr) => arr.map((i) => i.sku === item.sku ? { ...i, stock } : i));
+    try { const r = await api.blingFilaEstoque(item.sku, stock); setItems(r.fila || []); }
+    catch (e) { toast(e.message, 'err'); }
+  }
+
+  function searchBling(v) {
+    setForm((f) => ({ ...f, productName: v }));
+    if (searchRef.current) clearTimeout(searchRef.current);
+    const q = v.trim();
+    if (q.length < 3) { setSug([]); setShowSug(false); return; }
+    setSearching(true);
+    searchRef.current = setTimeout(async () => {
+      try {
+        const res = await api.blingSearch(q);
+        if (res && res.connected) { setSug(res.items || []); setShowSug(true); }
+        else { setSug([]); setShowSug(false); }
+      } catch { setSug([]); setShowSug(false); }
+      finally { setSearching(false); }
+    }, 350);
+  }
+
+  function pickProduct(item) {
+    setShowSug(false); setSug([]);
+    setForm((f) => ({
+      ...f,
+      productName: item.nome || f.productName,
+      sku: item.codigo || f.sku,
+      price: item.preco || f.price,
+    }));
+  }
+
   async function salvarManual() {
     if (!form.sku.trim() || !form.productName.trim() || !form.quantity || !form.price) {
       setModalErr('SKU, nome, quantidade e preço são obrigatórios.'); return;
     }
     setSaving(true); setModalErr('');
     try {
-      const r = await api.blingFilaManual({ ...form, quantity: Number(form.quantity), price: Number(form.price) });
+      const r = await api.blingFilaManual({ ...form, quantity: Number(form.quantity), price: Number(form.price), stock: Number(form.stock) || 0 });
       setItems(r.fila || []); setModal(false); toast('Item adicionado à fila');
     } catch (e) { setModalErr(e.message); }
     finally { setSaving(false); }
@@ -106,10 +143,10 @@ export function Fila({ onBack }) {
       <div className="page-head">
         <div>
           <h1>Fila de impressão</h1>
-          <p>Pedidos em aberto · maior valor = maior prioridade.</p>
+          <p>Pedidos em aberto · sem estoque sobe na fila, com estoque vira reposição.</p>
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-          <button className="btn btn-soft btn-sm" onClick={() => { setForm({ sku: '', productName: '', quantity: 1, price: 0, orderId: '' }); setModalErr(''); setModal(true); }}>
+          <button className="btn btn-soft btn-sm" onClick={() => { setForm({ sku: '', productName: '', quantity: 1, price: 0, orderId: '', stock: 0 }); setSug([]); setShowSug(false); setModalErr(''); setModal(true); }}>
             <Ic name="plus" />Adicionar
           </button>
           <button className="btn btn-primary btn-sm" onClick={atualizar} disabled={loading}>
@@ -124,6 +161,9 @@ export function Fila({ onBack }) {
           <Pill bg={PRIO.Alta.bg} fg={PRIO.Alta.fg}>🔴 Alta</Pill>
           <Pill bg={PRIO['Média'].bg} fg={PRIO['Média'].fg}>🟡 Média</Pill>
           <Pill bg={PRIO.Baixa.bg} fg={PRIO.Baixa.fg}>🟢 Baixa</Pill>
+          <span style={{ width: 1, height: 14, background: 'var(--line)', margin: '0 2px' }} />
+          <Pill bg="#fde2e1" fg="#c0322b">⚠ Sem estoque</Pill>
+          <Pill bg="#e1f5ea" fg="#15803d">✔ Reposição</Pill>
           <span style={{ marginLeft: 'auto', fontWeight: 600 }}>{items.length} item(ns) · {pendentes} pendente(s)</span>
         </div>
       )}
@@ -145,7 +185,7 @@ export function Fila({ onBack }) {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13.5, minWidth: 900 }}>
             <thead>
               <tr style={{ background: 'var(--surface-2)', textAlign: 'left' }}>
-                {['#', 'Criticidade', 'Produto', 'SKU', 'Canal', 'Total', 'Já impresso', 'Faltam', 'Valor un.', ''].map((h, i) => (
+                {['#', 'Criticidade', 'Produto', 'SKU', 'Canal', 'Total', 'Estoque', 'Já impresso', 'Faltam', 'Valor un.', ''].map((h, i) => (
                   <th key={i} style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-soft)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{h}</th>
                 ))}
               </tr>
@@ -164,6 +204,8 @@ export function Fila({ onBack }) {
                     <td style={{ padding: '10px 12px', maxWidth: 280 }}>
                       <div style={{ fontWeight: 600 }}>{it.productName}</div>
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 2 }}>
+                        {it.semEstoque && <span style={{ fontSize: 11, color: '#c0322b', fontWeight: 600 }}>⚠ sem estoque</span>}
+                        {it.reposicao && <span style={{ fontSize: 11, color: '#15803d', fontWeight: 600 }}>✔ reposição</span>}
                         {it.manual && <span style={{ fontSize: 11, color: '#7c3aed' }}>✏️ Manual</span>}
                         {first && !it.manual && <span style={{ fontSize: 11, color: 'var(--blue)' }}>✦ Próximo</span>}
                         {it.orderId && <span style={{ fontSize: 11, color: 'var(--ink-faint,#94a3b8)' }}>#{it.orderId}</span>}
@@ -176,6 +218,16 @@ export function Fila({ onBack }) {
                       </div>
                     </td>
                     <td style={{ padding: '10px 12px', fontWeight: 700 }}>{it.quantity}</td>
+                    <td style={{ padding: '10px 12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <button className="btn btn-ghost btn-sm" style={{ padding: '2px 9px' }} disabled={(it.stock || 0) === 0} onClick={() => setStock(it, (it.stock || 0) - 1)}>−</button>
+                        <input type="number" min="0" value={it.stock || 0}
+                          onChange={(e) => setStock(it, parseInt(e.target.value, 10) || 0)}
+                          title="Estoque que você tem em mãos"
+                          style={{ width: 52, textAlign: 'center', padding: '4px', border: '1px solid var(--line)', borderRadius: 6 }} />
+                        <button className="btn btn-ghost btn-sm" style={{ padding: '2px 9px' }} onClick={() => setStock(it, (it.stock || 0) + 1)}>+</button>
+                      </div>
+                    </td>
                     <td style={{ padding: '10px 12px', minWidth: 150 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <button className="btn btn-ghost btn-sm" style={{ padding: '2px 9px' }} disabled={it.printed === 0} onClick={() => setPrinted(it, it.printed - 1)}>−</button>
@@ -231,13 +283,34 @@ export function Fila({ onBack }) {
               <button className="btn btn-ghost btn-sm" onClick={() => setModal(false)}><Ic name="x" /></button>
             </div>
             <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div className="field" style={{ position: 'relative' }}>
+                <label>Produto <span style={{ color: 'var(--ink-faint,#94a3b8)' }}>(busca no Bling)</span></label>
+                <input value={form.productName}
+                  onChange={(e) => searchBling(e.target.value)}
+                  onFocus={() => { if (sug.length) setShowSug(true); }}
+                  onBlur={() => setTimeout(() => setShowSug(false), 150)}
+                  placeholder="Digite o nome para buscar…" autoComplete="off" />
+                {searching && <span className="ac-hint"><span className="ac-spin" /> buscando no Bling…</span>}
+                {showSug && sug.length > 0 && (
+                  <div className="ac-list">
+                    {sug.map((s) => (
+                      <div key={s.id} className="ac-item" onMouseDown={(e) => { e.preventDefault(); pickProduct(s); }}>
+                        <span className="nm">{s.nome}</span>
+                        <span className="meta">{s.codigo} · {fmtBRL(s.preco)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
               <div className="field"><label>SKU *</label><input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} placeholder="Ex.: B3D-001" /></div>
-              <div className="field"><label>Nome do produto *</label><input value={form.productName} onChange={(e) => setForm({ ...form, productName: e.target.value })} placeholder="Ex.: Suporte PS5 Branco" /></div>
               <div style={{ display: 'flex', gap: 12 }}>
                 <div className="field" style={{ flex: 1 }}><label>Quantidade *</label><input type="number" min="1" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} /></div>
                 <div className="field" style={{ flex: 1 }}><label>Preço un. (R$) *</label><input type="number" min="0" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} /></div>
               </div>
-              <div className="field"><label>Nº Pedido <span style={{ color: 'var(--ink-faint,#94a3b8)' }}>(opcional)</span></label><input value={form.orderId} onChange={(e) => setForm({ ...form, orderId: e.target.value })} placeholder="Ex.: 27292" /></div>
+              <div style={{ display: 'flex', gap: 12 }}>
+                <div className="field" style={{ flex: 1 }}><label>Estoque atual</label><input type="number" min="0" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} placeholder="0" /></div>
+                <div className="field" style={{ flex: 1 }}><label>Nº Pedido <span style={{ color: 'var(--ink-faint,#94a3b8)' }}>(opcional)</span></label><input value={form.orderId} onChange={(e) => setForm({ ...form, orderId: e.target.value })} placeholder="Ex.: 27292" /></div>
+              </div>
               {modalErr && <p className="hint" style={{ color: 'var(--warn,#b45309)' }}>⚠ {modalErr}</p>}
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, padding: '14px 20px', borderTop: '1px solid var(--line)' }}>
