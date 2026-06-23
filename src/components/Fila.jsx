@@ -24,12 +24,12 @@ function Pill({ bg, fg, children }) {
   return <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: bg, color: fg, padding: '2px 8px', borderRadius: 999, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap' }}>{children}</span>;
 }
 
-export function Fila({ onBack }) {
+export function Fila() {
   const [items, setItems] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [modal, setModal] = useState(false);
-  const [form, setForm] = useState({ sku: '', productName: '', quantity: 1, price: 0, orderId: '', stock: 0 });
+  const [form, setForm] = useState({ sku: '', productName: '', quantity: 1, price: 0, orderId: '' });
   const [saving, setSaving] = useState(false);
   const [modalErr, setModalErr] = useState('');
   const [sug, setSug] = useState([]);
@@ -69,13 +69,6 @@ export function Fila({ onBack }) {
     catch (e) { toast(e.message, 'err'); }
   }
 
-  async function setStock(item, value) {
-    const stock = Math.max(0, value);
-    setItems((arr) => arr.map((i) => i.sku === item.sku ? { ...i, stock } : i));
-    try { const r = await api.blingFilaEstoque(item.sku, stock); setItems(r.fila || []); }
-    catch (e) { toast(e.message, 'err'); }
-  }
-
   function searchBling(v) {
     setForm((f) => ({ ...f, productName: v }));
     if (searchRef.current) clearTimeout(searchRef.current);
@@ -108,7 +101,7 @@ export function Fila({ onBack }) {
     }
     setSaving(true); setModalErr('');
     try {
-      const r = await api.blingFilaManual({ ...form, quantity: Number(form.quantity), price: Number(form.price), stock: Number(form.stock) || 0 });
+      const r = await api.blingFilaManual({ ...form, quantity: Number(form.quantity), price: Number(form.price) });
       setItems(r.fila || []); setModal(false); toast('Item adicionado à fila');
     } catch (e) { setModalErr(e.message); }
     finally { setSaving(false); }
@@ -138,15 +131,13 @@ export function Fila({ onBack }) {
 
   return (
     <>
-      <button className="btn btn-ghost btn-sm" style={{ marginBottom: 18 }} onClick={onBack}><Ic name="back" />Voltar ao painel</button>
-
       <div className="page-head">
         <div>
           <h1>Fila de impressão</h1>
           <p>Pedidos em aberto · sem estoque sobe na fila, com estoque vira reposição.</p>
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-          <button className="btn btn-soft btn-sm" onClick={() => { setForm({ sku: '', productName: '', quantity: 1, price: 0, orderId: '', stock: 0 }); setSug([]); setShowSug(false); setModalErr(''); setModal(true); }}>
+          <button className="btn btn-soft btn-sm" onClick={() => { setForm({ sku: '', productName: '', quantity: 1, price: 0, orderId: '' }); setSug([]); setShowSug(false); setModalErr(''); setModal(true); }}>
             <Ic name="plus" />Adicionar
           </button>
           <button className="btn btn-primary btn-sm" onClick={atualizar} disabled={loading}>
@@ -219,14 +210,9 @@ export function Fila({ onBack }) {
                     </td>
                     <td style={{ padding: '10px 12px', fontWeight: 700 }}>{it.quantity}</td>
                     <td style={{ padding: '10px 12px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <button className="btn btn-ghost btn-sm" style={{ padding: '2px 9px' }} disabled={(it.stock || 0) === 0} onClick={() => setStock(it, (it.stock || 0) - 1)}>−</button>
-                        <input type="number" min="0" value={it.stock || 0}
-                          onChange={(e) => setStock(it, parseInt(e.target.value, 10) || 0)}
-                          title="Estoque que você tem em mãos"
-                          style={{ width: 52, textAlign: 'center', padding: '4px', border: '1px solid var(--line)', borderRadius: 6 }} />
-                        <button className="btn btn-ghost btn-sm" style={{ padding: '2px 9px' }} onClick={() => setStock(it, (it.stock || 0) + 1)}>+</button>
-                      </div>
+                      {it.stock == null
+                        ? <span style={{ color: 'var(--ink-faint,#94a3b8)' }} title="Não cadastrado na aba Estoque">—</span>
+                        : <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 13, color: it.semEstoque ? '#c0322b' : 'var(--ink-soft)' }} title="Estoque atual (edite na aba Estoque)"><Ic name="tag" />{it.stock} un</span>}
                     </td>
                     <td style={{ padding: '10px 12px', minWidth: 150 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -307,10 +293,7 @@ export function Fila({ onBack }) {
                 <div className="field" style={{ flex: 1 }}><label>Quantidade *</label><input type="number" min="1" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} /></div>
                 <div className="field" style={{ flex: 1 }}><label>Preço un. (R$) *</label><input type="number" min="0" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} /></div>
               </div>
-              <div style={{ display: 'flex', gap: 12 }}>
-                <div className="field" style={{ flex: 1 }}><label>Estoque atual</label><input type="number" min="0" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} placeholder="0" /></div>
-                <div className="field" style={{ flex: 1 }}><label>Nº Pedido <span style={{ color: 'var(--ink-faint,#94a3b8)' }}>(opcional)</span></label><input value={form.orderId} onChange={(e) => setForm({ ...form, orderId: e.target.value })} placeholder="Ex.: 27292" /></div>
-              </div>
+              <div className="field"><label>Nº Pedido <span style={{ color: 'var(--ink-faint,#94a3b8)' }}>(opcional)</span></label><input value={form.orderId} onChange={(e) => setForm({ ...form, orderId: e.target.value })} placeholder="Ex.: 27292" /></div>
               {modalErr && <p className="hint" style={{ color: 'var(--warn,#b45309)' }}>⚠ {modalErr}</p>}
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, padding: '14px 20px', borderTop: '1px solid var(--line)' }}>
