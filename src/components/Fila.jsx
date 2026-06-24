@@ -17,6 +17,7 @@ const MP = {
   other: { bg: '#eef1f4', fg: '#64748b', icon: '🌐' },
 };
 const fmtBRL = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const fmtSync = (iso) => { if (!iso) return null; const d = new Date(iso); return isNaN(d) ? null : d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }); };
 const mp = (id) => MP[id] || MP.other;
 const prio = (p) => PRIO[p] || PRIO.Baixa;
 
@@ -26,6 +27,7 @@ function Pill({ bg, fg, children }) {
 
 export function Fila() {
   const [items, setItems] = useState(null);
+  const [lastSync, setLastSync] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [modal, setModal] = useState(false);
@@ -41,7 +43,7 @@ export function Fila() {
   const [impProc, setImpProc] = useState('');
   const [importing, setImporting] = useState(false);
 
-  useEffect(() => { api.blingFila().then((r) => setItems(r.fila || [])).catch((e) => setError(e.message)); }, []);
+  useEffect(() => { api.blingFila().then((r) => { setItems(r.fila || []); setLastSync(r.lastSync || null); }).catch((e) => setError(e.message)); }, []);
 
   // Polling de 2 min: mantém a tela em sincronia com outras telas/operadores
   // (não atualiza enquanto está buscando no Bling ou com o modal aberto).
@@ -50,14 +52,14 @@ export function Fila() {
   useEffect(() => {
     const t = setInterval(async () => {
       if (busy.current.loading || busy.current.modal) return;
-      try { const r = await api.blingFila(); setItems(r.fila || []); } catch {}
+      try { const r = await api.blingFila(); setItems(r.fila || []); if (r.lastSync) setLastSync(r.lastSync); } catch {}
     }, 120000);
     return () => clearInterval(t);
   }, []);
 
   async function atualizar() {
     setLoading(true); setError(null);
-    try { const r = await api.blingFilaAtualizar(); setItems(r.fila || []); toast('Fila atualizada'); }
+    try { const r = await api.blingFilaAtualizar(); setItems(r.fila || []); if (r.lastSync) setLastSync(r.lastSync); toast('Fila atualizada'); }
     catch (e) { setError(e.message); }
     finally { setLoading(false); }
   }
@@ -137,6 +139,11 @@ export function Fila() {
           <p>Pedidos em aberto · sem estoque sobe na fila, com estoque vira reposição.</p>
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+          {lastSync && (
+            <span style={{ fontSize: 12.5, color: 'var(--ink-soft)' }} title="Horário da última busca no Bling">
+              Última consulta: {fmtSync(lastSync)}
+            </span>
+          )}
           <button className="btn btn-soft btn-sm" onClick={() => { setForm({ sku: '', productName: '', quantity: 1, price: 0, orderId: '' }); setSug([]); setShowSug(false); setModalErr(''); setModal(true); }}>
             <Ic name="plus" />Adicionar
           </button>
