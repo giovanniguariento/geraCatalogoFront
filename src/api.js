@@ -29,6 +29,7 @@ export const api = {
   // Bling (opcional)
   blingStatus: () => req('/bling/status'),
   blingSearch: (q) => req('/bling/produtos?q=' + encodeURIComponent(q)),
+  blingProdutoPorSku: (sku) => req('/bling/produto-por-sku?sku=' + encodeURIComponent(sku)),
   blingProduct: (id) => req('/bling/produtos/' + encodeURIComponent(id)),
   // OAuth é navegação de página inteira (fora de /api); volta pro app via ?bling=
   blingConnectUrl: () => BASE + '/bling/connect?return=' +

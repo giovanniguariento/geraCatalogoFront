@@ -227,3 +227,6 @@ input,textarea,select{font-family:inherit; font-size:14px; color:var(--ink)}
 [data-theme="dark"] .btn-danger-soft{background:#3a1d1d;color:#f7a8a2}
 [data-theme="dark"] .icon-btn.danger:hover{background:#3a1d1d}
 [data-theme="dark"] .seg button.on{background:var(--surface-3);color:var(--blue-deep)}
+
+.consulta-grid{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr)}
+@media(max-width:680px){.consulta-grid{grid-template-columns:1fr}}
