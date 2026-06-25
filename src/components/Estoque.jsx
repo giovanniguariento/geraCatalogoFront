@@ -66,7 +66,7 @@ export function Estoque() {
       <div className="page-head">
         <div>
           <h1>Estoque</h1>
-          <p>Quantidade em mãos por produto. A fila usa isso para definir a prioridade.</p>
+          <p>Saldo cai quando o pedido entra na fila e volta quando você imprime. Negativo = backorder (vendido além do estoque).</p>
         </div>
       </div>
 
@@ -117,9 +117,9 @@ export function Estoque() {
                     <td style={{ padding: '10px 12px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <button className="btn btn-ghost btn-sm" style={{ padding: '2px 9px' }} disabled={(it.stock || 0) === 0} onClick={() => setStock(it, (it.stock || 0) - 1)}>−</button>
-                        <input type="number" min="0" value={it.stock || 0}
+                        <input type="number" value={it.stock || 0}
                           onChange={(e) => setStock(it, parseInt(e.target.value, 10) || 0)}
-                          style={{ width: 56, textAlign: 'center', padding: '4px', border: '1px solid var(--line)', borderRadius: 6 }} />
+                          style={{ width: 56, textAlign: 'center', padding: '4px', border: '1px solid var(--line)', borderRadius: 6, color: (it.stock || 0) < 0 ? '#c0322b' : 'inherit', fontWeight: (it.stock || 0) < 0 ? 700 : 400 }} />
                         <button className="btn btn-ghost btn-sm" style={{ padding: '2px 9px' }} onClick={() => setStock(it, (it.stock || 0) + 1)}>+</button>
                       </div>
                     </td>

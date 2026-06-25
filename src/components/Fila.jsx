@@ -219,7 +219,7 @@ export function Fila() {
                     <td style={{ padding: '10px 12px' }}>
                       {it.stock == null
                         ? <span style={{ color: 'var(--ink-faint,#94a3b8)' }} title="Não cadastrado na aba Estoque">—</span>
-                        : <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 13, color: it.semEstoque ? '#c0322b' : 'var(--ink-soft)' }} title="Estoque atual (edite na aba Estoque)"><Ic name="tag" />{it.stock} un</span>}
+                        : <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 13, color: it.semEstoque ? '#c0322b' : 'var(--ink-soft)' }} title="Saldo atual (cai quando entra pedido, volta quando imprime)"><Ic name="tag" />{it.stock < 0 ? `falta ${-it.stock}` : `${it.stock} un`}</span>}
                     </td>
                     <td style={{ padding: '10px 12px', minWidth: 150 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
