@@ -199,12 +199,12 @@ export function Fila() {
               <col style={{ width: 92 }} />
               <col style={{ width: 168 }} />
               <col style={{ width: 72 }} />
-              <col style={{ width: 96 }} />
               <col style={{ width: 156 }} />
+              <col style={{ width: 96 }} />
             </colgroup>
             <thead>
               <tr style={{ background: 'var(--surface-2)', textAlign: 'left' }}>
-                {['#', 'Criticidade', 'Produto', 'SKU', 'Canal', 'Total', 'Estoque', 'Já impresso', 'Faltam', 'Valor un.', ''].map((h, i) => (
+                {['#', 'Criticidade', 'Produto', 'SKU', 'Canal', 'Total', 'Estoque', 'Já impresso', 'Faltam', '', 'Valor un.'].map((h, i) => (
                   <th key={i} style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-soft)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{h}</th>
                 ))}
               </tr>
@@ -260,9 +260,8 @@ export function Fila() {
                       )}
                     </td>
                     <td style={{ padding: '10px 12px', fontWeight: 700, fontSize: 15 }}>{it.remaining}</td>
-                    <td style={{ padding: '10px 12px', fontWeight: 700, color: pc.fg, whiteSpace: 'nowrap' }}>{fmtBRL(it.price)}</td>
                     <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>
-                      <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                      <div style={{ display: 'flex', gap: 6 }}>
                         {it.printed >= it.quantity && it.quantity > 0 && (
                           <button className="btn btn-soft btn-sm" title="Concluir e lançar a sobra no estoque" onClick={() => concluir(it)}>
                             <Ic name="check" />Concluir
@@ -271,6 +270,7 @@ export function Fila() {
                         <button className="btn btn-ghost btn-sm" title="Remover da fila" onClick={() => remover(it)}><Ic name="trash" /></button>
                       </div>
                     </td>
+                    <td style={{ padding: '10px 12px', fontWeight: 700, color: pc.fg, whiteSpace: 'nowrap' }}>{fmtBRL(it.price)}</td>
                   </tr>
                 );
               })}
