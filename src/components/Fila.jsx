@@ -117,9 +117,9 @@ export function Fila() {
     finally { setSaving(false); }
   }
 
-  async function remover(item) {
-    if (!window.confirm(`Remover "${item.productName || item.sku}" da fila?`)) return;
-    try { const r = await api.blingFilaRemover(item.sku); setItems(r.fila || []); }
+  async function resolver(item) {
+    if (!window.confirm(`Marcar "${item.productName || item.sku}" como resolvido? Sai da fila e não volta — a não ser que entre uma venda nova.`)) return;
+    try { const r = await api.blingFilaRemover(item.sku); setItems(r.fila || []); toast('Pedido(s) marcado(s) como resolvido'); }
     catch (e) { toast(e.message, 'err'); }
   }
 
@@ -188,9 +188,8 @@ export function Fila() {
 
       {items && items.length > 0 && (
         <div className="panel" style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13.5, minWidth: 1240, tableLayout: 'fixed' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13.5, minWidth: 1250, tableLayout: 'fixed' }}>
             <colgroup>
-              <col style={{ width: 44 }} />
               <col style={{ width: 112 }} />
               <col style={{ width: 210 }} />
               <col style={{ width: 140 }} />
@@ -199,12 +198,12 @@ export function Fila() {
               <col style={{ width: 92 }} />
               <col style={{ width: 168 }} />
               <col style={{ width: 72 }} />
-              <col style={{ width: 156 }} />
+              <col style={{ width: 210 }} />
               <col style={{ width: 96 }} />
             </colgroup>
             <thead>
               <tr style={{ background: 'var(--surface-2)', textAlign: 'left' }}>
-                {['#', 'Criticidade', 'Produto', 'SKU', 'Canal', 'Total', 'Estoque', 'Já impresso', 'Faltam', '', 'Valor un.'].map((h, i) => (
+                {['Criticidade', 'Produto', 'SKU', 'Canal', 'Total', 'Estoque', 'Já impresso', 'Faltam', '', 'Valor un.'].map((h, i) => (
                   <th key={i} style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-soft)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{h}</th>
                 ))}
               </tr>
@@ -216,9 +215,6 @@ export function Fila() {
                 const first = idx === 0 && it.remaining > 0;
                 return (
                   <tr key={it.sku} style={{ borderTop: '1px solid var(--line)', background: first ? 'rgba(35,88,230,.04)' : it.manual ? 'rgba(163,113,247,.05)' : 'transparent' }}>
-                    <td style={{ padding: '10px 12px' }}>
-                      <span style={{ display: 'inline-flex', width: 24, height: 24, borderRadius: '50%', background: 'var(--surface-3,#eef1f6)', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>{idx + 1}</span>
-                    </td>
                     <td style={{ padding: '10px 12px' }}><Pill bg={pc.bg} fg={pc.fg}>{pc.dot} {it.priority}</Pill></td>
                     <td style={{ padding: '10px 12px', overflowWrap: 'anywhere' }}>
                       <div style={{ fontWeight: 600 }}>{it.productName}</div>
@@ -261,13 +257,13 @@ export function Fila() {
                     </td>
                     <td style={{ padding: '10px 12px', fontWeight: 700, fontSize: 15 }}>{it.remaining}</td>
                     <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>
-                      <div style={{ display: 'flex', gap: 6 }}>
+                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                         {it.printed >= it.quantity && it.quantity > 0 && (
                           <button className="btn btn-soft btn-sm" title="Concluir e lançar a sobra no estoque" onClick={() => concluir(it)}>
                             <Ic name="check" />Concluir
                           </button>
                         )}
-                        <button className="btn btn-ghost btn-sm" title="Remover da fila" onClick={() => remover(it)}><Ic name="trash" /></button>
+                        <button className="btn btn-ghost btn-sm" title="Marcar pedido(s) como resolvido — sai da fila e só volta em nova venda" onClick={() => resolver(it)}><Ic name="done" />Resolver</button>
                       </div>
                     </td>
                     <td style={{ padding: '10px 12px', fontWeight: 700, color: pc.fg, whiteSpace: 'nowrap' }}>{fmtBRL(it.price)}</td>
