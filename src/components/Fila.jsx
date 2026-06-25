@@ -188,7 +188,20 @@ export function Fila() {
 
       {items && items.length > 0 && (
         <div className="panel" style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13.5, minWidth: 900 }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13.5, minWidth: 1240, tableLayout: 'fixed' }}>
+            <colgroup>
+              <col style={{ width: 44 }} />
+              <col style={{ width: 112 }} />
+              <col style={{ width: 210 }} />
+              <col style={{ width: 140 }} />
+              <col style={{ width: 96 }} />
+              <col style={{ width: 64 }} />
+              <col style={{ width: 92 }} />
+              <col style={{ width: 168 }} />
+              <col style={{ width: 72 }} />
+              <col style={{ width: 96 }} />
+              <col style={{ width: 156 }} />
+            </colgroup>
             <thead>
               <tr style={{ background: 'var(--surface-2)', textAlign: 'left' }}>
                 {['#', 'Criticidade', 'Produto', 'SKU', 'Canal', 'Total', 'Estoque', 'Já impresso', 'Faltam', 'Valor un.', ''].map((h, i) => (
@@ -207,7 +220,7 @@ export function Fila() {
                       <span style={{ display: 'inline-flex', width: 24, height: 24, borderRadius: '50%', background: 'var(--surface-3,#eef1f6)', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>{idx + 1}</span>
                     </td>
                     <td style={{ padding: '10px 12px' }}><Pill bg={pc.bg} fg={pc.fg}>{pc.dot} {it.priority}</Pill></td>
-                    <td style={{ padding: '10px 12px', maxWidth: 280 }}>
+                    <td style={{ padding: '10px 12px', overflowWrap: 'anywhere' }}>
                       <div style={{ fontWeight: 600 }}>{it.productName}</div>
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 2 }}>
                         {it.semEstoque && <span style={{ fontSize: 11, color: '#c0322b', fontWeight: 600 }}>⚠ sem estoque</span>}
@@ -217,7 +230,7 @@ export function Fila() {
                         {it.orderId && <span style={{ fontSize: 11, color: 'var(--ink-faint,#94a3b8)' }}>#{it.orderId}</span>}
                       </div>
                     </td>
-                    <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontSize: 12 }}>{it.sku}</td>
+                    <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontSize: 12, overflowWrap: 'anywhere' }}>{it.sku}</td>
                     <td style={{ padding: '10px 12px' }}>
                       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                         {(it.marketplaces || []).map((m, i) => { const c = mp(m.id); return <Pill key={i} bg={c.bg} fg={c.fg}>{c.icon} {m.label}</Pill>; })}
