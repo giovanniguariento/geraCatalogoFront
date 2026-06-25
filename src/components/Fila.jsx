@@ -38,6 +38,8 @@ export function Fila() {
   const [showSug, setShowSug] = useState(false);
   const [searching, setSearching] = useState(false);
   const searchRef = useRef(null);
+  const [confirmSku, setConfirmSku] = useState(null);
+  const confirmTimer = useRef(null);
   const [showImport, setShowImport] = useState(false);
   const [impQueue, setImpQueue] = useState('');
   const [impProc, setImpProc] = useState('');
@@ -117,8 +119,18 @@ export function Fila() {
     finally { setSaving(false); }
   }
 
-  async function resolver(item) {
-    if (!window.confirm(`Marcar "${item.productName || item.sku}" como resolvido? Sai da fila e não volta — a não ser que entre uma venda nova.`)) return;
+  function askResolver(item) {
+    clearTimeout(confirmTimer.current);
+    setConfirmSku(item.sku);
+    confirmTimer.current = setTimeout(() => setConfirmSku(null), 4000);
+  }
+  function cancelResolver() {
+    clearTimeout(confirmTimer.current);
+    setConfirmSku(null);
+  }
+  async function doResolver(item) {
+    clearTimeout(confirmTimer.current);
+    setConfirmSku(null);
     try { const r = await api.blingFilaRemover(item.sku); setItems(r.fila || []); toast('Pedido(s) marcado(s) como resolvido'); }
     catch (e) { toast(e.message, 'err'); }
   }
@@ -263,7 +275,14 @@ export function Fila() {
                             <Ic name="check" />Concluir
                           </button>
                         )}
-                        <button className="btn btn-ghost btn-sm" title="Marcar pedido(s) como resolvido — sai da fila e só volta em nova venda" onClick={() => resolver(it)}><Ic name="done" />Resolver</button>
+                        {confirmSku === it.sku ? (
+                          <>
+                            <button className="btn btn-danger-soft btn-sm" title="Confirmar — sai da fila e só volta em nova venda" onClick={() => doResolver(it)}><Ic name="done" />Confirmar</button>
+                            <button className="btn btn-ghost btn-sm" title="Cancelar" onClick={cancelResolver}><Ic name="x" /></button>
+                          </>
+                        ) : (
+                          <button className="btn btn-ghost btn-sm" title="Marcar pedido(s) como resolvido — sai da fila e só volta em nova venda" onClick={() => askResolver(it)}><Ic name="done" />Resolver</button>
+                        )}
                       </div>
                     </td>
                     <td style={{ padding: '10px 12px', fontWeight: 700, color: pc.fg, whiteSpace: 'nowrap' }}>{fmtBRL(it.price)}</td>
