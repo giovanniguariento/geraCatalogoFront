@@ -71,6 +71,14 @@ export function Fila() {
     catch (e) { toast(e.message, 'err'); }
   }
 
+  async function concluir(item) {
+    try {
+      const r = await api.blingFilaConcluir(item.sku);
+      setItems(r.fila || []);
+      toast(r.surplus > 0 ? `Concluído · ${r.surplus} de sobra lançada no estoque` : 'Item concluído');
+    } catch (e) { toast(e.message, 'err'); }
+  }
+
   function searchBling(v) {
     setForm((f) => ({ ...f, productName: v }));
     if (searchRef.current) clearTimeout(searchRef.current);
@@ -230,13 +238,25 @@ export function Fila() {
                         <button className="btn btn-ghost btn-sm" style={{ padding: '2px 9px' }} onClick={() => setPrinted(it, it.printed + 1)}>+</button>
                       </div>
                       <div style={{ height: 4, background: 'var(--surface-3,#eef1f6)', borderRadius: 4, marginTop: 6, overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: pct + '%', background: 'var(--blue)' }} />
+                        <div style={{ height: '100%', width: Math.min(100, pct) + '%', background: it.printed > it.quantity ? '#15803d' : 'var(--blue)' }} />
                       </div>
+                      {it.printed > it.quantity && (
+                        <div style={{ marginTop: 5, fontSize: 11, color: '#15803d', fontWeight: 600 }}>
+                          {it.quantity} atendem · sobra +{it.printed - it.quantity} ao estoque
+                        </div>
+                      )}
                     </td>
                     <td style={{ padding: '10px 12px', fontWeight: 700, fontSize: 15 }}>{it.remaining}</td>
                     <td style={{ padding: '10px 12px', fontWeight: 700, color: pc.fg, whiteSpace: 'nowrap' }}>{fmtBRL(it.price)}</td>
-                    <td style={{ padding: '10px 12px' }}>
-                      <button className="btn btn-ghost btn-sm" title="Remover da fila" onClick={() => remover(it)}><Ic name="trash" /></button>
+                    <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>
+                      <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                        {it.printed >= it.quantity && it.quantity > 0 && (
+                          <button className="btn btn-soft btn-sm" title="Concluir e lançar a sobra no estoque" onClick={() => concluir(it)}>
+                            <Ic name="check" />Concluir
+                          </button>
+                        )}
+                        <button className="btn btn-ghost btn-sm" title="Remover da fila" onClick={() => remover(it)}><Ic name="trash" /></button>
+                      </div>
                     </td>
                   </tr>
                 );
