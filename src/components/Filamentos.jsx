@@ -143,7 +143,7 @@ export function Filamentos({ onBack }) {
       )}
 
       {list.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 260px), 1fr))', gap: 12 }}>
           {list.map((it) => {
             const si = saldoInfo(it.saldo);
             const open = action && action.id === it.id;
@@ -201,7 +201,7 @@ export function Filamentos({ onBack }) {
                       </div>
                     )}
 
-                    <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
+                    <div style={{ display: 'flex', gap: 8, marginTop: 14, flexWrap: 'wrap' }}>
                       <button className="btn btn-primary" style={{ height: 44 }} disabled={saving} onClick={() => confirmAction(it)}>
                         <Ic name="check" />{saving ? 'Salvando…' : (action.type === 'entrada' ? 'Confirmar entrada' : 'Confirmar balanço')}
                       </button>
