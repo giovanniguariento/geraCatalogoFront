@@ -49,6 +49,13 @@ export const api = {
   blingFilaManual: (form) => req('/bling/fila/manual', { method: 'POST', body: JSON.stringify(form) }),
   blingFilaRemover: (sku) => req('/bling/fila/remover', { method: 'POST', body: JSON.stringify({ sku }) }),
   blingFilaImportar: (queue, processed) => req('/bling/fila/importar', { method: 'POST', body: JSON.stringify({ queue, processed }) }),
+  // Estoque de filamentos
+  blingFilamentos: () => req('/bling/filamentos'),
+  blingFilamentoAdd: (id) => req('/bling/filamentos', { method: 'POST', body: JSON.stringify({ id }) }),
+  blingFilamentoRemover: (id) => req('/bling/filamentos/remover', { method: 'POST', body: JSON.stringify({ id }) }),
+  blingFilamentoEntrada: ({ id, quantidade, custo, obs }) => req('/bling/filamentos/entrada', { method: 'POST', body: JSON.stringify({ id, quantidade, custo, obs }) }),
+  blingFilamentoBalanco: ({ id, quantidade, obs }) => req('/bling/filamentos/balanco', { method: 'POST', body: JSON.stringify({ id, quantidade, obs }) }),
+  blingDepositos: () => req('/bling/depositos'),
   // Conversor ZPL -> PDF
   zplCount: (zpl) => req('/zpl/contar', { method: 'POST', body: JSON.stringify({ zpl }) }),
   zplConvert: async ({ zpl, dpmm, width, height, rotation }) => {
