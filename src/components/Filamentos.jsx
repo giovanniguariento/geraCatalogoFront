@@ -16,6 +16,7 @@ function saldoInfo(saldo) {
 export function Filamentos({ onBack }) {
   const [items, setItems] = useState(null);
   const [error, setError] = useState(null);
+  const [saldoStatus, setSaldoStatus] = useState(200);
   const [filter, setFilter] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -30,9 +31,11 @@ export function Filamentos({ onBack }) {
   const [action, setAction] = useState(null);
   const [saving, setSaving] = useState(false);
 
+  function applyResp(r) { setItems(r.filamentos || []); if (r.saldoStatus != null) setSaldoStatus(r.saldoStatus); }
+
   function load() {
     setLoading(true);
-    api.blingFilamentos().then((r) => setItems(r.filamentos || [])).catch((e) => setError(e.message)).finally(() => setLoading(false));
+    api.blingFilamentos().then(applyResp).catch((e) => setError(e.message)).finally(() => setLoading(false));
   }
   useEffect(() => { load(); }, []);
 
@@ -54,12 +57,12 @@ export function Filamentos({ onBack }) {
 
   async function add(item) {
     setShowSug(false); setSug([]); setQ('');
-    try { const r = await api.blingFilamentoAdd(item.id); setItems(r.filamentos || []); toast('Filamento adicionado'); }
+    try { const r = await api.blingFilamentoAdd(item.id); applyResp(r); toast('Filamento adicionado'); }
     catch (e) { toast(e.message, 'err'); }
   }
 
   async function remove(it) {
-    try { const r = await api.blingFilamentoRemover(it.id); setItems(r.filamentos || []); }
+    try { const r = await api.blingFilamentoRemover(it.id); applyResp(r); }
     catch (e) { toast(e.message, 'err'); }
   }
 
@@ -74,7 +77,7 @@ export function Filamentos({ onBack }) {
       const r = action.type === 'entrada'
         ? await api.blingFilamentoEntrada({ id: it.id, quantidade: qty, custo: action.custo })
         : await api.blingFilamentoBalanco({ id: it.id, quantidade: qty });
-      setItems(r.filamentos || []);
+      applyResp(r);
       toast(action.type === 'entrada' ? `Entrada de ${qty} lançada no Bling` : `Saldo ajustado para ${qty} no Bling`);
       setAction(null);
     } catch (e) { toast(e.message, 'err'); }
@@ -125,6 +128,15 @@ export function Filamentos({ onBack }) {
       </div>
 
       {error && <div className="empty"><div className="ic"><Ic name="x" /></div><h3>Não foi possível carregar</h3><p>{error}</p></div>}
+
+      {!error && saldoStatus !== 200 && (
+        <div className="panel" style={{ padding: '12px 14px', marginBottom: 12, borderColor: '#e0b4b4', background: 'rgba(192,50,43,.06)', fontSize: 13.5 }}>
+          <b>O Bling recusou a leitura de saldo (status {saldoStatus}).</b>{' '}
+          {saldoStatus === 403
+            ? 'Provavelmente o app não tem permissão de estoque. No cadastro do app no Bling, habilite “Controle de Estoque” e “Depósitos de Estoque” e reconecte (botão Reconectar no painel).'
+            : 'Verifique a conexão com o Bling e tente Atualizar.'}
+        </div>
+      )}
 
       {items && items.length === 0 && !error && (
         <div className="empty"><div className="ic"><Ic name="layers" /></div><h3>Nenhum filamento na lista</h3><p>Adicione filamentos buscando no Bling acima. O saldo é lido direto do Bling.</p></div>
