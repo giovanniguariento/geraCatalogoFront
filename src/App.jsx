@@ -6,6 +6,7 @@ import { Relatorio } from './components/Relatorio.jsx';
 import { Producao } from './components/Producao.jsx';
 import { Zpl } from './components/Zpl.jsx';
 import { Filamentos } from './components/Filamentos.jsx';
+import { Cnab } from './components/Cnab.jsx';
 import { ToastHost, toast } from './components/Toasts.jsx';
 import { Ic } from './icons.jsx';
 
@@ -31,6 +32,7 @@ export default function App() {
   const openFila = () => setRoute({ screen: 'fila', id: null });
   const openZpl = () => setRoute({ screen: 'zpl', id: null });
   const openFilamentos = () => setRoute({ screen: 'filamentos', id: null });
+  const openCnab = () => setRoute({ screen: 'cnab', id: null });
 
   // Retorno do OAuth do Bling: mostra aviso e limpa a URL
   useEffect(() => {
@@ -73,6 +75,7 @@ export default function App() {
             {route.screen === 'fila' && <span className="here">Fila de impressão</span>}
             {route.screen === 'relatorio' && <span className="here">Relatórios</span>}
             {route.screen === 'filamentos' && <span className="here">Estoque de Filamentos</span>}
+            {route.screen === 'cnab' && <span className="here">Guias → CNAB Itaú</span>}
           </div>
           <button className="theme-toggle" onClick={toggleTheme} title="Alternar tema claro/escuro" aria-label="Alternar tema" style={{ marginLeft: 10 }}>
             {theme === 'dark' ? '☀️' : '🌙'}
@@ -81,13 +84,14 @@ export default function App() {
       </div>
 
       <div className="wrap">
-        {route.screen === 'dashboard' && <Dashboard onCatalogos={openCatalogos} onFila={openFila} onRelatorio={openRelatorio} onZpl={openZpl} onFilamentos={openFilamentos} />}
+        {route.screen === 'dashboard' && <Dashboard onCatalogos={openCatalogos} onFila={openFila} onRelatorio={openRelatorio} onZpl={openZpl} onFilamentos={openFilamentos} onCnab={openCnab} />}
         {route.screen === 'catalogos' && <Home onOpen={openEditor} onBack={goDash} />}
         {route.screen === 'editor' && <Editor catalogId={route.id} onBack={openCatalogos} />}
         {route.screen === 'relatorio' && <Relatorio onBack={goDash} />}
         {route.screen === 'fila' && <Producao onBack={goDash} />}
         {route.screen === 'zpl' && <Zpl onBack={goDash} />}
         {route.screen === 'filamentos' && <Filamentos onBack={goDash} />}
+        {route.screen === 'cnab' && <Cnab onBack={goDash} />}
       </div>
 
       <ToastHost />

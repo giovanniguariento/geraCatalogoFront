@@ -33,7 +33,7 @@ function Card({ icon, accent, title, desc, meta, onClick, soon }) {
   );
 }
 
-export function Dashboard({ onCatalogos, onFila, onRelatorio, onZpl, onFilamentos }) {
+export function Dashboard({ onCatalogos, onFila, onRelatorio, onZpl, onFilamentos, onCnab }) {
   const [bling, setBling] = useState(null);
   const [nCat, setNCat] = useState(null);
 
@@ -100,6 +100,13 @@ export function Dashboard({ onCatalogos, onFila, onRelatorio, onZpl, onFilamento
           desc="Ver o saldo dos filamentos e lançar entrada/balanço no Bling."
           meta="integrado ao Bling"
           onClick={onFilamentos}
+        />
+        <Card
+          icon="pdf" title="Guias → CNAB Itaú"
+          accent={{ bg: '#e7f0ff', fg: '#1c47b8' }}
+          desc="Converter guias com código de barras em arquivo CNAB 240 pra pagar no Itaú."
+          meta="CNAB 240"
+          onClick={onCnab}
         />
       </div>
     </>

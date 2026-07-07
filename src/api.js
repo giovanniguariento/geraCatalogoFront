@@ -56,6 +56,11 @@ export const api = {
   blingFilamentoEntrada: ({ id, quantidade, custo, obs }) => req('/bling/filamentos/entrada', { method: 'POST', body: JSON.stringify({ id, quantidade, custo, obs }) }),
   blingFilamentoBalanco: ({ id, quantidade, obs }) => req('/bling/filamentos/balanco', { method: 'POST', body: JSON.stringify({ id, quantidade, obs }) }),
   blingDepositos: () => req('/bling/depositos'),
+  // CNAB Itaú
+  cnabPagador: () => req('/cnab/pagador'),
+  cnabPagadorSet: (p) => req('/cnab/pagador', { method: 'POST', body: JSON.stringify(p) }),
+  cnabDecodificar: (linhas) => req('/cnab/decodificar', { method: 'POST', body: JSON.stringify({ linhas }) }),
+  cnabGerar: (itens) => req('/cnab/gerar', { method: 'POST', body: JSON.stringify({ itens }) }),
   // Conversor ZPL -> PDF
   zplCount: (zpl) => req('/zpl/contar', { method: 'POST', body: JSON.stringify({ zpl }) }),
   zplConvert: async ({ zpl, dpmm, width, height, rotation }) => {
