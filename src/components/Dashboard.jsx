@@ -33,12 +33,13 @@ function Card({ icon, accent, title, desc, meta, onClick, soon }) {
   );
 }
 
-export function Dashboard({ onCatalogos, onFila, onRelatorio, onZpl, onFilamentos, onCnab }) {
+export function Dashboard({ user, can, isAdmin, onCatalogos, onFila, onRelatorio, onZpl, onFilamentos, onCnab, onUsuarios }) {
   const [bling, setBling] = useState(null);
   const [nCat, setNCat] = useState(null);
 
   useEffect(() => { api.blingStatus().then(setBling).catch(() => setBling(null)); }, []);
-  useEffect(() => { api.listCatalogs().then((l) => setNCat(l.length)).catch(() => setNCat(null)); }, []);
+  useEffect(() => { if (can && can('catalogos')) api.listCatalogs().then((l) => setNCat(l.length)).catch(() => setNCat(null)); }, []);
+  const allow = can || (() => true);
 
   return (
     <>
@@ -66,48 +67,55 @@ export function Dashboard({ onCatalogos, onFila, onRelatorio, onZpl, onFilamento
       </div>
 
       <div className="dash-grid">
-        <Card
+        {allow('catalogos') && <Card
           icon="book" title="Catálogos"
           accent={{ bg: '#e6f0ff', fg: '#1c47b8' }}
           desc="Criar, editar e exportar catálogos de produtos em PDF."
           meta={nCat == null ? '—' : `${nCat} ${nCat === 1 ? 'catálogo' : 'catálogos'}`}
           onClick={onCatalogos}
-        />
-        <Card
+        />}
+        {allow('fila') && <Card
           icon="layers" title="Fila de impressão"
           accent={{ bg: '#fdf0d9', fg: '#92590b' }}
           desc="Pedidos do Bling priorizados para a produção."
           meta="produção"
           onClick={onFila}
-        />
-        <Card
+        />}
+        {allow('relatorios') && <Card
           icon="chart" title="Relatórios"
           accent={{ bg: '#dff4ec', fg: '#0f6e56' }}
           desc="Peso vendido por fornecedor e outras extrações do Bling."
           meta="por mês"
           onClick={onRelatorio}
-        />
-        <Card
+        />}
+        {allow('zpl') && <Card
           icon="tag" title="Etiquetas ZPL"
           accent={{ bg: '#efe7fb', fg: '#6d28d9' }}
           desc="Converter ZPL em PDF multipágina, sem limite de etiquetas."
           meta="ZPL → PDF"
           onClick={onZpl}
-        />
-        <Card
+        />}
+        {allow('filamentos') && <Card
           icon="layers" title="Estoque de Filamentos"
           accent={{ bg: '#e1f0ff', fg: '#0f6e56' }}
           desc="Ver o saldo dos filamentos e lançar entrada/balanço no Bling."
           meta="integrado ao Bling"
           onClick={onFilamentos}
-        />
-        <Card
+        />}
+        {allow('cnab') && <Card
           icon="pdf" title="Guias → CNAB Itaú"
           accent={{ bg: '#e7f0ff', fg: '#1c47b8' }}
           desc="Converter guias com código de barras em arquivo CNAB 240 pra pagar no Itaú."
           meta="CNAB 240"
           onClick={onCnab}
-        />
+        />}
+        {isAdmin && <Card
+          icon="gear" title="Usuários"
+          accent={{ bg: '#eef1f4', fg: '#334155' }}
+          desc="Criar usuários e liberar as telas que cada um pode acessar."
+          meta="admin"
+          onClick={onUsuarios}
+        />}
       </div>
     </>
   );

@@ -1,10 +1,24 @@
 const BASE = (import.meta.env.VITE_API_URL || 'http://localhost:4000').replace(/\/$/, '');
 const KEY = import.meta.env.VITE_API_KEY || '';
+const TOKEN_KEY = 'boreal_token';
+
+export function getToken() { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch { return ''; } }
+export function setToken(t) { try { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY); } catch {} }
 
 async function req(path, opts = {}) {
   const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
   if (KEY) headers['x-api-key'] = KEY;
+  const tk = getToken();
+  if (tk) headers['Authorization'] = 'Bearer ' + tk;
   const r = await fetch(BASE + '/api' + path, { ...opts, headers });
+  if (r.status === 401) {
+    // sessão expirada/ inválida: derruba o login e recarrega
+    setToken('');
+    if (!path.startsWith('/auth/login')) { window.dispatchEvent(new Event('boreal-logout')); }
+    let msg = 'Sessão expirada. Faça login novamente.';
+    try { const j = await r.json(); msg = j.error || msg; } catch {}
+    throw new Error(msg);
+  }
   if (!r.ok) {
     let msg = 'Erro ' + r.status;
     try { const j = await r.json(); msg = j.error || msg; } catch {}
@@ -16,6 +30,13 @@ async function req(path, opts = {}) {
 
 export const api = {
   base: BASE,
+  // Auth
+  authLogin: (email, senha) => req('/auth/login', { method: 'POST', body: JSON.stringify({ email, senha }) }),
+  authMe: () => req('/auth/me'),
+  usersList: () => req('/auth/users'),
+  userCreate: (data) => req('/auth/users', { method: 'POST', body: JSON.stringify(data) }),
+  userUpdate: (id, data) => req('/auth/users/' + id, { method: 'PUT', body: JSON.stringify(data) }),
+  userDelete: (id) => req('/auth/users/' + id, { method: 'DELETE' }),
   listCatalogs: () => req('/catalogs'),
   getCatalog: (id) => req('/catalogs/' + id),
   createCatalog: () => req('/catalogs', { method: 'POST', body: '{}' }),
