@@ -77,6 +77,9 @@ export const api = {
   blingFilamentoEntrada: ({ id, quantidade, custo, obs }) => req('/bling/filamentos/entrada', { method: 'POST', body: JSON.stringify({ id, quantidade, custo, obs }) }),
   blingFilamentoBalanco: ({ id, quantidade, obs }) => req('/bling/filamentos/balanco', { method: 'POST', body: JSON.stringify({ id, quantidade, obs }) }),
   blingDepositos: () => req('/bling/depositos'),
+  // Cálculo de produto
+  calcConfig: () => req('/calc/config'),
+  calcConfigSet: (c) => req('/calc/config', { method: 'POST', body: JSON.stringify(c) }),
   // CNAB Itaú
   cnabPagador: () => req('/cnab/pagador'),
   cnabPagadorSet: (p) => req('/cnab/pagador', { method: 'POST', body: JSON.stringify(p) }),

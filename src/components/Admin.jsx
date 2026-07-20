@@ -10,6 +10,7 @@ const LABELS = {
   zpl: 'Etiquetas ZPL',
   cnab: 'Guias → CNAB Itaú',
   relatorios: 'Relatórios',
+  calculadora: 'Cálculo de produto',
 };
 
 const vazio = { email: '', nome: '', senha: '', role: 'user', permissoes: [] };

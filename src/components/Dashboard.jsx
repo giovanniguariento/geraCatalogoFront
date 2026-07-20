@@ -33,7 +33,7 @@ function Card({ icon, accent, title, desc, meta, onClick, soon }) {
   );
 }
 
-export function Dashboard({ user, can, isAdmin, onCatalogos, onFila, onRelatorio, onZpl, onFilamentos, onCnab, onUsuarios }) {
+export function Dashboard({ user, can, isAdmin, onCatalogos, onFila, onRelatorio, onZpl, onFilamentos, onCnab, onCalc, onUsuarios }) {
   const [bling, setBling] = useState(null);
   const [nCat, setNCat] = useState(null);
 
@@ -108,6 +108,13 @@ export function Dashboard({ user, can, isAdmin, onCatalogos, onFila, onRelatorio
           desc="Converter guias com código de barras em arquivo CNAB 240 pra pagar no Itaú."
           meta="CNAB 240"
           onClick={onCnab}
+        />}
+        {allow('calculadora') && <Card
+          icon="chart" title="Cálculo de produto"
+          accent={{ bg: '#fdf0d9', fg: '#92590b' }}
+          desc="Preço pela hora-máquina e conferência da margem com o custo do filamento."
+          meta="preço e margem"
+          onClick={onCalc}
         />}
         {isAdmin && <Card
           icon="gear" title="Usuários"

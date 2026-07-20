@@ -245,3 +245,5 @@ html,body{max-width:100%;overflow-x:hidden}
 
 .consulta-grid{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr)}
 @media(max-width:680px){.consulta-grid{grid-template-columns:1fr}}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+@media(max-width:820px){.calc-grid{grid-template-columns:1fr}}
