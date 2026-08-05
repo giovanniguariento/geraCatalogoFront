@@ -80,7 +80,7 @@ export const api = {
   // Cálculo de produto
   calcConfig: () => req('/calc/config'),
   calcConfigSet: (c) => req('/calc/config', { method: 'POST', body: JSON.stringify(c) }),
-  etiquetasGerar: (itens) => req('/etiquetas/gerar', { method: 'POST', body: JSON.stringify({ itens }) }),
+  etiquetasGerar: (tamanho, itens) => req('/etiquetas/gerar', { method: 'POST', body: JSON.stringify({ tamanho, itens }) }),
   // CNAB Itaú
   cnabPagador: () => req('/cnab/pagador'),
   cnabPagadorSet: (p) => req('/cnab/pagador', { method: 'POST', body: JSON.stringify(p) }),
