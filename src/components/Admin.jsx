@@ -11,6 +11,7 @@ const LABELS = {
   cnab: 'Guias → CNAB Itaú',
   relatorios: 'Relatórios',
   calculadora: 'Cálculo de produto',
+  etiquetas: 'Gerador de Etiquetas',
 };
 
 const vazio = { email: '', nome: '', senha: '', role: 'user', permissoes: [] };

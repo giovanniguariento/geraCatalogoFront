@@ -8,6 +8,7 @@ import { Zpl } from './components/Zpl.jsx';
 import { Filamentos } from './components/Filamentos.jsx';
 import { Cnab } from './components/Cnab.jsx';
 import { Calculadora } from './components/Calculadora.jsx';
+import { Etiquetas } from './components/Etiquetas.jsx';
 import { Login } from './components/Login.jsx';
 import { Admin } from './components/Admin.jsx';
 import { ToastHost, toast } from './components/Toasts.jsx';
@@ -56,6 +57,7 @@ export default function App() {
   const openFilamentos = () => setRoute({ screen: 'filamentos', id: null });
   const openCnab = () => setRoute({ screen: 'cnab', id: null });
   const openCalc = () => setRoute({ screen: 'calc', id: null });
+  const openEtiquetas = () => setRoute({ screen: 'etiquetas', id: null });
   const openUsuarios = () => setRoute({ screen: 'usuarios', id: null });
   const logout = () => { setToken(''); setUser(null); setRoute({ screen: 'dashboard', id: null }); };
 
@@ -79,7 +81,7 @@ export default function App() {
   // proteção: se a rota atual não é permitida, volta ao dashboard
   const guard = {
     catalogos: 'catalogos', editor: 'catalogos', fila: 'fila', relatorio: 'relatorios',
-    zpl: 'zpl', filamentos: 'filamentos', cnab: 'cnab', calc: 'calculadora',
+    zpl: 'zpl', filamentos: 'filamentos', cnab: 'cnab', calc: 'calculadora', etiquetas: 'etiquetas',
   };
   const needed = guard[route.screen];
   const usuariosOk = route.screen !== 'usuarios' || isAdmin;
@@ -109,6 +111,7 @@ export default function App() {
             {scr === 'filamentos' && <span className="here">Estoque de Filamentos</span>}
             {scr === 'cnab' && <span className="here">Guias → CNAB Itaú</span>}
             {scr === 'calc' && <span className="here">Cálculo de produto</span>}
+            {scr === 'etiquetas' && <span className="here">Gerador de Etiquetas</span>}
             {scr === 'usuarios' && <span className="here">Usuários</span>}
           </div>
           <button className="theme-toggle" onClick={toggleTheme} title="Alternar tema" aria-label="Alternar tema" style={{ marginLeft: 10 }}>
@@ -121,7 +124,7 @@ export default function App() {
       </div>
 
       <div className="wrap">
-        {scr === 'dashboard' && <Dashboard user={user} can={can} isAdmin={isAdmin} onCatalogos={openCatalogos} onFila={openFila} onRelatorio={openRelatorio} onZpl={openZpl} onFilamentos={openFilamentos} onCnab={openCnab} onCalc={openCalc} onUsuarios={openUsuarios} />}
+        {scr === 'dashboard' && <Dashboard user={user} can={can} isAdmin={isAdmin} onCatalogos={openCatalogos} onFila={openFila} onRelatorio={openRelatorio} onZpl={openZpl} onFilamentos={openFilamentos} onCnab={openCnab} onCalc={openCalc} onEtiquetas={openEtiquetas} onUsuarios={openUsuarios} />}
         {scr === 'catalogos' && <Home onOpen={openEditor} onBack={goDash} />}
         {scr === 'editor' && <Editor catalogId={route.id} onBack={openCatalogos} />}
         {scr === 'relatorio' && <Relatorio onBack={goDash} />}
@@ -130,6 +133,7 @@ export default function App() {
         {scr === 'filamentos' && <Filamentos onBack={goDash} />}
         {scr === 'cnab' && <Cnab onBack={goDash} />}
         {scr === 'calc' && <Calculadora onBack={goDash} />}
+        {scr === 'etiquetas' && <Etiquetas onBack={goDash} />}
         {scr === 'usuarios' && <Admin onBack={goDash} currentUser={user} />}
       </div>
 
