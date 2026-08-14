@@ -72,13 +72,16 @@ export function Filamentos({ onBack }) {
 
   async function confirmAction(it) {
     const qty = Math.max(0, Number(action.qty) || 0);
+    const tipo = action.type;
     setSaving(true);
     try {
-      const r = action.type === 'entrada'
-        ? await api.blingFilamentoEntrada({ id: it.id, quantidade: qty, custo: action.custo })
-        : await api.blingFilamentoBalanco({ id: it.id, quantidade: qty });
-      applyResp(r);
-      toast(action.type === 'entrada' ? `Entrada de ${qty} lançada no Bling` : `Saldo ajustado para ${qty} no Bling`);
+      if (tipo === 'entrada') await api.blingFilamentoEntrada({ id: it.id, quantidade: qty, custo: action.custo });
+      else await api.blingFilamentoBalanco({ id: it.id, quantidade: qty });
+      // atualiza só este item na hora (balanço define; entrada soma) — libera o próximo lançamento
+      setItems((arr) => arr.map((f) => f.id === it.id
+        ? { ...f, saldo: tipo === 'balanco' ? qty : (Number(f.saldo) || 0) + qty }
+        : f));
+      toast(tipo === 'entrada' ? `Entrada de ${qty} lançada` : `Saldo ajustado para ${qty}`);
       setAction(null);
     } catch (e) { toast(e.message, 'err'); }
     finally { setSaving(false); }
