@@ -33,7 +33,7 @@ function Card({ icon, accent, title, desc, meta, onClick, soon }) {
   );
 }
 
-export function Dashboard({ user, can, isAdmin, onCatalogos, onFila, onRelatorio, onZpl, onFilamentos, onCnab, onCalc, onEtiquetas, onUsuarios }) {
+export function Dashboard({ user, can, isAdmin, onCatalogos, onFila, onRelatorio, onZpl, onFilamentos, onCnab, onCalc, onEtiquetas, onClientes, onUsuarios }) {
   const [bling, setBling] = useState(null);
   const [nCat, setNCat] = useState(null);
 
@@ -122,6 +122,13 @@ export function Dashboard({ user, can, isAdmin, onCatalogos, onFila, onRelatorio
           desc="Etiquetas com código de barras (GTIN-14) e nome do produto em PDF."
           meta="código de barras"
           onClick={onEtiquetas}
+        />}
+        {allow('clientes') && <Card
+          icon="chart" title="Saldo de Clientes"
+          accent={{ bg: '#e1f5ea', fg: '#0f6e56' }}
+          desc="Clientes que pré-compram kg e retiram aos poucos, com histórico."
+          meta="pré-compra"
+          onClick={onClientes}
         />}
         {isAdmin && <Card
           icon="gear" title="Usuários"

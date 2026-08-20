@@ -12,6 +12,7 @@ const LABELS = {
   relatorios: 'Relatórios',
   calculadora: 'Cálculo de produto',
   etiquetas: 'Gerador de Etiquetas',
+  clientes: 'Saldo de Clientes',
 };
 
 const vazio = { email: '', nome: '', senha: '', role: 'user', permissoes: [] };

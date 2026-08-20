@@ -81,6 +81,15 @@ export const api = {
   calcConfig: () => req('/calc/config'),
   calcConfigSet: (c) => req('/calc/config', { method: 'POST', body: JSON.stringify(c) }),
   etiquetasGerar: (tamanho, itens) => req('/etiquetas/gerar', { method: 'POST', body: JSON.stringify({ tamanho, itens }) }),
+  // Saldo de clientes
+  clientesList: () => req('/clientes'),
+  clienteGet: (id) => req('/clientes/' + id),
+  clienteCriar: (d) => req('/clientes', { method: 'POST', body: JSON.stringify(d) }),
+  clienteEditar: (id, d) => req('/clientes/' + id, { method: 'PUT', body: JSON.stringify(d) }),
+  clienteRemover: (id) => req('/clientes/' + id, { method: 'DELETE' }),
+  clienteCredito: (id, d) => req('/clientes/' + id + '/credito', { method: 'POST', body: JSON.stringify(d) }),
+  clienteRetirada: (id, d) => req('/clientes/' + id + '/retirada', { method: 'POST', body: JSON.stringify(d) }),
+  clienteRemoverMov: (id, movId) => req('/clientes/' + id + '/mov/' + movId + '/remover', { method: 'POST' }),
   // CNAB Itaú
   cnabPagador: () => req('/cnab/pagador'),
   cnabPagadorSet: (p) => req('/cnab/pagador', { method: 'POST', body: JSON.stringify(p) }),
