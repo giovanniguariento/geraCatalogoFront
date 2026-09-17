@@ -220,6 +220,7 @@ export function Fila() {
                   <label key={s.id} className="perm-chip" data-on={on}>
                     <input type="checkbox" checked={on} onChange={() => setSitSel((arr) => on ? arr.filter((x) => x !== String(s.id)) : [...arr, String(s.id)])} />
                     {s.nome} <span style={{ color: 'var(--ink-faint,#94a3b8)', fontFamily: 'var(--mono)', fontSize: 11 }}>#{s.id}</span>
+                    {s.recentes > 0 && <span style={{ color: 'var(--blue)', fontSize: 11 }}>· {s.recentes} recentes</span>}
                   </label>
                 );
               })}
