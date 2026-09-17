@@ -41,6 +41,10 @@ export function Fila() {
   const [confirmSku, setConfirmSku] = useState(null);
   const confirmTimer = useRef(null);
   const [showImport, setShowImport] = useState(false);
+  const [showSit, setShowSit] = useState(false);
+  const [sitDisp, setSitDisp] = useState(null);
+  const [sitSel, setSitSel] = useState([]);
+  const [sitBusy, setSitBusy] = useState(false);
   const [impQueue, setImpQueue] = useState('');
   const [impProc, setImpProc] = useState('');
   const [importing, setImporting] = useState(false);
@@ -64,6 +68,25 @@ export function Fila() {
     try { const r = await api.blingFilaAtualizar(); setItems(r.fila || []); if (r.lastSync) setLastSync(r.lastSync); toast('Fila atualizada'); }
     catch (e) { setError(e.message); }
     finally { setLoading(false); }
+  }
+
+  async function abrirSit() {
+    setShowSit(true); setSitDisp(null);
+    try {
+      const r = await api.blingFilaSituacoes();
+      setSitDisp(r.disponiveis || []);
+      setSitSel((r.selecionadas || []).map(String));
+    } catch (e) { setSitDisp([]); toast(e.message, 'err'); }
+  }
+  async function salvarSit() {
+    setSitBusy(true);
+    try {
+      await api.blingFilaSituacoesSet(sitSel);
+      setShowSit(false);
+      toast('Status salvos. Atualizando a fila…');
+      atualizar();
+    } catch (e) { toast(e.message, 'err'); }
+    finally { setSitBusy(false); }
   }
 
   async function setPrinted(item, value) {
@@ -164,6 +187,9 @@ export function Fila() {
               Última consulta: {fmtSync(lastSync)}
             </span>
           )}
+          <button className="btn btn-ghost btn-sm" title="Status dos pedidos que entram na fila" onClick={abrirSit}>
+            <Ic name="gear" />Status
+          </button>
           <button className="btn btn-soft btn-sm" onClick={() => { setForm({ sku: '', productName: '', quantity: 1, price: 0, orderId: '' }); setSug([]); setShowSug(false); setModalErr(''); setModal(true); }}>
             <Ic name="plus" />Adicionar
           </button>
@@ -172,6 +198,39 @@ export function Fila() {
           </button>
         </div>
       </div>
+
+      {showSit && (
+        <div className="panel" style={{ padding: 16, marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+            <b>Status dos pedidos que entram na fila</b>
+            <button className="btn btn-ghost btn-sm" onClick={() => setShowSit(false)}><Ic name="x" /></button>
+          </div>
+          <p style={{ fontSize: 13, color: 'var(--ink-soft)', marginTop: 0 }}>
+            Marque quais status do Bling a fila deve buscar. Se seus pedidos passaram a entrar com um status personalizado, marque ele aqui também.
+          </p>
+          {sitDisp == null ? (
+            <div style={{ fontSize: 13, color: 'var(--ink-soft)' }}>Carregando status do Bling…</div>
+          ) : sitDisp.length === 0 ? (
+            <div style={{ fontSize: 13, color: 'var(--ink-soft)' }}>Não consegui listar os status do Bling. Verifique a conexão e tente de novo.</div>
+          ) : (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {sitDisp.map((s) => {
+                const on = sitSel.includes(String(s.id));
+                return (
+                  <label key={s.id} className="perm-chip" data-on={on}>
+                    <input type="checkbox" checked={on} onChange={() => setSitSel((arr) => on ? arr.filter((x) => x !== String(s.id)) : [...arr, String(s.id)])} />
+                    {s.nome} <span style={{ color: 'var(--ink-faint,#94a3b8)', fontFamily: 'var(--mono)', fontSize: 11 }}>#{s.id}</span>
+                  </label>
+                );
+              })}
+            </div>
+          )}
+          <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
+            <button className="btn btn-primary btn-sm" onClick={salvarSit} disabled={sitBusy || !sitSel.length}><Ic name="check" />{sitBusy ? 'Salvando…' : 'Salvar e atualizar'}</button>
+            <button className="btn btn-ghost btn-sm" onClick={() => setShowSit(false)}>Cancelar</button>
+          </div>
+        </div>
+      )}
 
       {items && items.length > 0 && (
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', margin: '4px 0 16px', fontSize: 13, color: 'var(--ink-soft)' }}>

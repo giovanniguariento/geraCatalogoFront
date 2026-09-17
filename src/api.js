@@ -70,6 +70,8 @@ export const api = {
   blingFilaManual: (form) => req('/bling/fila/manual', { method: 'POST', body: JSON.stringify(form) }),
   blingFilaRemover: (sku) => req('/bling/fila/remover', { method: 'POST', body: JSON.stringify({ sku }) }),
   blingFilaImportar: (queue, processed) => req('/bling/fila/importar', { method: 'POST', body: JSON.stringify({ queue, processed }) }),
+  blingFilaSituacoes: () => req('/bling/fila/situacoes'),
+  blingFilaSituacoesSet: (ids) => req('/bling/fila/situacoes', { method: 'POST', body: JSON.stringify({ ids }) }),
   // Estoque de filamentos
   blingFilamentos: () => req('/bling/filamentos'),
   blingFilamentoAdd: (id) => req('/bling/filamentos', { method: 'POST', body: JSON.stringify({ id }) }),
