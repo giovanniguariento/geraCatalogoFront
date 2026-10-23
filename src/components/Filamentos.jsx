@@ -17,6 +17,7 @@ export function Filamentos({ onBack }) {
   const [items, setItems] = useState(null);
   const [error, setError] = useState(null);
   const [saldoStatus, setSaldoStatus] = useState(200);
+  const [tokenErro, setTokenErro] = useState('');
   const [filter, setFilter] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -31,7 +32,7 @@ export function Filamentos({ onBack }) {
   const [action, setAction] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  function applyResp(r) { setItems(r.filamentos || []); if (r.saldoStatus != null) setSaldoStatus(r.saldoStatus); }
+  function applyResp(r) { setItems(r.filamentos || []); if (r.saldoStatus != null) setSaldoStatus(r.saldoStatus); setTokenErro(r.tokenErro || ''); }
 
   function load() {
     setLoading(true);
@@ -137,7 +138,10 @@ export function Filamentos({ onBack }) {
           <b>O Bling recusou a leitura de saldo (status {saldoStatus}).</b>{' '}
           {saldoStatus === 403
             ? 'Provavelmente o app não tem permissão de estoque. No cadastro do app no Bling, habilite “Controle de Estoque” e “Depósitos de Estoque” e reconecte (botão Reconectar no painel).'
-            : 'Verifique a conexão com o Bling e tente Atualizar.'}
+            : saldoStatus === 0
+              ? 'A conexão com o Bling caiu — o token precisa ser renovado. Vá ao painel e clique em Reconectar ao Bling.'
+              : 'Verifique a conexão com o Bling e tente Atualizar.'}
+          {tokenErro && <div style={{ marginTop: 6, fontSize: 12, color: 'var(--ink-soft)', fontFamily: 'var(--mono)' }}>motivo: {tokenErro}</div>}
         </div>
       )}
 
@@ -163,6 +167,7 @@ export function Filamentos({ onBack }) {
                       {si.badge && <span style={{ background: si.badge.bg, color: si.badge.fg, fontSize: 11, padding: '2px 8px', borderRadius: 999 }}>{si.badge.txt}</span>}
                     </div>
                     <div style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink-soft)' }}>{it.sku || '—'}</div>
+                    {it.gtin && <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-faint,#94a3b8)' }}>GTIN/EAN: {it.gtin}</div>}
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontSize: 11, color: 'var(--ink-soft)' }}>saldo</div>
