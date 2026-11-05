@@ -13,6 +13,8 @@ const LABELS = {
   calculadora: 'Cálculo de produto',
   etiquetas: 'Gerador de Etiquetas',
   clientes: 'Saldo de Clientes',
+  industria: 'Indústria · produção',
+  industria_comercial: 'Indústria · prioridade (comercial)',
 };
 
 const vazio = { email: '', nome: '', senha: '', role: 'user', permissoes: [] };

@@ -33,7 +33,7 @@ function Card({ icon, accent, title, desc, meta, onClick, soon }) {
   );
 }
 
-export function Dashboard({ user, can, isAdmin, onCatalogos, onFila, onRelatorio, onZpl, onFilamentos, onCnab, onCalc, onEtiquetas, onClientes, onUsuarios }) {
+export function Dashboard({ user, can, isAdmin, onCatalogos, onFila, onRelatorio, onZpl, onFilamentos, onCnab, onCalc, onEtiquetas, onClientes, onIndustria, onUsuarios }) {
   const [bling, setBling] = useState(null);
   const [nCat, setNCat] = useState(null);
 
@@ -129,6 +129,13 @@ export function Dashboard({ user, can, isAdmin, onCatalogos, onFila, onRelatorio
           desc="Clientes que pré-compram kg e retiram aos poucos, com histórico."
           meta="pré-compra"
           onClick={onClientes}
+        />}
+        {(allow('industria') || allow('industria_comercial')) && <Card
+          icon="factory" title="Indústria de Filamentos"
+          accent={{ bg: '#efe7fb', fg: '#6d28d9' }}
+          desc="Fila de produção por estoque, receitas de cores e prioridade do comercial."
+          meta="produção"
+          onClick={onIndustria}
         />}
         {isAdmin && <Card
           icon="gear" title="Usuários"
